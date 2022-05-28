@@ -1,5 +1,7828 @@
 # MPT Landerneau: Atelier Raspberry Pi
 
+## **Saison 2021/2022**
+
+
+
+[2022](2022/README.md)
+
+
+
+## Mardi 14 décembre
+
+Dernière séance de l'année.
+
+On se retrouvera le mardi 11 janvier 2022, d'ici là, bonnes fêtes de fin d'année.
+
+Animation de 18h à 20h à la MPT.
+
+En présentiel à la MPT, avec Pass Sanitaire ou test négatif pour les adultes.
+Au programme:
+
+   * Jeu en Python avec PyGame (**space\_invaders.py)**
+
+
+**Gestion du jeu:**
+
+-----------
+
+    import pygame
+
+    
+
+    class Alien:
+
+    
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen,
+
+                (80, 40, 90),
+
+                pygame.Rect(self.x, self.y, 30, 30))
+
+            self.y = self.y + 0.20
+
+    
+
+    # fin de classe Alien
+
+    
+
+    # class de rocket
+
+    class Rocket:
+
+    
+
+        #  initialisation de l'instance
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        # dessiner sur l'écran
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen, 
+
+                    (254, 52, 110),
+
+                    pygame.Rect(self.x, self.y, 2, 4))
+
+            self.y = self.y - 2
+
+        # fin de la fonction
+
+    # fin de la classe Rocket
+
+    
+
+    # dessiner vaisseau
+
+    def dessiner\_vaisseau(screen\_vaisseau, vaisseau\_x,vaisseau\_y):
+
+        pygame.draw.rect(screen\_vaisseau,
+
+            (210, 250, 251),
+
+            pygame.Rect(vaisseau\_x, vaisseau\_y, 8,5))
+
+    ## fin de la méthode dessiner vaisseau
+
+    
+
+    # afficher du texte sur l'ecran
+
+    def afficherEcran(screen, message):
+
+        pygame.font.init()
+
+        font = pygame.font.SysFont('Arial', 60)
+
+        textsurface = font.render(message, False, (44, 0, 62))
+
+        text\_rect = textsurface.get\_rect(center=(640/2, 480/2))
+
+        screen.blit(textsurface, text\_rect)
+
+    # fin de la méthode
+
+    
+
+    screen = None
+
+    # tableau d'aliens, à partir de la classe Alien
+
+    aliens = []
+
+    rockets = []
+
+    nouveau\_rockets = []
+
+    
+
+    pygame.init()
+
+    width = 640
+
+    height = 480
+
+    BLACK = (0,0,0)
+
+    
+
+    space\_x = width / 2 # milieu de l'écran
+
+    space\_y = height - 20 # bas de l'écran
+
+    
+
+    screen = pygame.display.set\_mode((width, height))
+
+    # un objet Clock: horloge pour compter les FPS
+
+    clock = pygame.time.Clock()
+
+    
+
+    done = False # True=1, False=0
+
+    # game over, figer le jeu
+
+    perdu = False
+
+    
+
+    espace\_x\_entre\_alien = 10
+
+    # générer les aliens
+
+    for colonne in range(15): # for i = 0 , i < 15 , i++
+
+        for ligne in range(4):
+
+            #  x, y
+
+            aliens.append(Alien(screen, (colonne*40) + 30, (ligne *40) + 30))
+
+        # fin de ligne
+
+    # fin de colonne
+
+    # monAlien1 = Alien(screen, 30, 30)
+
+    # monAlien3 = Alien(screen, 30+30+10, 30)
+
+    # monAlien4 = Alien(screen, 110, 30)
+
+    # monAlien2 = Alien(screen, 100, 100)
+
+    
+
+    # boucle principale
+
+    while not done:
+
+        # afficherEcran(screen, "Le jeu des aliens")
+
+        # vérifier si il reste encore des aliens
+
+        if len(aliens) == 0:
+
+            # le tableau des aliens est vide
+
+            afficherEcran(screen, "Victoire sur les aliens")
+
+        # copie de tableau
+
+        rockets = nouveau\_rockets
+
+        nouveau\_rockets = []
+
+        # action sur une touche
+
+        pressed = pygame.key.get\_pressed()
+
+        if pressed[pygame.K\_LEFT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x >= 20:
+
+                # diminuer space\_x de 2 pour aller vers la gauche
+
+                space\_x = space\_x - 2
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        if pressed[pygame.K\_RIGHT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x <= (width - 20):
+
+                # augmenter space\_x de 2 pour aller vers la droite
+
+                space\_x = space\_x + 2
+
+                
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        # boucle pour traiter tous les événements
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+
+                done = True
+
+            # quand la touche ESPACE est appuyée, tir de rocket
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K\_SPACE:
+
+                rockets.append(Rocket(screen, space\_x, space\_y))
+
+        # gestion de mon animation
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+        # couleur (R:0-255 => 2^8, G:0-255, B:0-255)
+
+        screen.fill(BLACK)
+
+        # dessiner les aliens
+
+        for chaqueAlien in aliens:
+
+            # re-dessiner un alien
+
+            chaqueAlien.draw()
+
+            # vérification de collision avec les rockets
+
+            for chaqueRocket in rockets:
+
+                if (chaqueRocket.x < chaqueAlien.x + 30 and
+
+                    chaqueRocket.x > chaqueAlien.x and
+
+                    chaqueRocket.y < chaqueAlien.y + 30 and 
+
+                    chaqueRocket.y > chaqueAlien.y - 30):
+
+                    # enter en collision
+
+                    # enlever l'alien
+
+                    aliens.remove(chaqueAlien)
+
+                    # enlever la rocket
+
+                    rockets.remove(chaqueRocket)
+
+            # vérifier qu'un Alien est arrivé au niveau du vaisseau
+
+            if (chaqueAlien.y + 30) > space\_y:
+
+                afficherEcran(screen, "Game Over!")
+
+                # j'ai perdu
+
+                perdu = True
+
+    
+
+        # monAlien1.draw() # Alien.draw(monAlien1)
+
+        # monAlien2.draw()
+
+        # monAlien3.draw()
+
+        # monAlien4.draw()
+
+        ## dessiner le vaisseau
+
+        if not perdu:
+
+            dessiner\_vaisseau(screen, space\_x, space\_y)
+
+            for chaqueRocket in rockets:
+
+                chaqueRocket.draw()
+
+                if chaqueRocket.y >= 0:
+
+                    nouveau\_rockets.append(chaqueRocket)
+
+            # rocket est en dehors de l'écran
+
+            # enlever la rocket du tableau
+
+    
+
+    # fin de la boucle
+
+    # sortie
+
+----------
+
+
+
+Références;
+
+   * [https://www.pygame.org/news](https://www.pygame.org/news)
+   * [https://www.pygame.org/wiki/GettingStarted](https://www.pygame.org/wiki/GettingStarted)
+   * [https://htmlcolorcodes.com/fr/](https://htmlcolorcodes.com/fr/)
+
+
+
+
+## Samedi 27 novembre
+
+Animation de 10h à 12h à la MPT.
+
+
+
+En présentiel à la MPT, avec Pass Sanitaire ou test négatif pour les adultes.
+
+
+
+Au programme:
+
+   * Jeu en Python avec GuiZero
+       * Création du canvas
+
+
+
+
+# Fichier tictactoe.py
+
+# Imports ---------------
+
+from guizero import App, Box, PushButton, Text, MenuBar
+
+
+
+
+
+# Functions -------------
+
+def clear\_board():
+
+    new\_board = [[None, None, None], [None, None, None], [None, None, None]]
+
+    for x in range(3):
+
+        for y in range(3):
+
+            button = PushButton(board, text="", grid=[x, y], width=3, command=choose\_square, args=[x,y])
+
+            new\_board[x][y] = button
+
+    return new\_board
+
+
+
+def choose\_square(x, y):
+
+    board\_squares[x][y].text = turn
+
+    board\_squares[x][y].disable()
+
+    toggle\_player()
+
+    check\_win()
+
+
+
+def toggle\_player():
+
+    global turn
+
+    if turn == "X":
+
+        turn = "O"
+
+    else:
+
+        turn = "X"
+
+    message.value = "It is your turn, " + turn
+
+
+
+def check\_win():
+
+    winner = None
+
+
+
+    # Vertical lines
+
+    if (
+
+        board\_squares[0][0].text == board\_squares[0][1].text == board\_squares[0][2].text
+
+    ) and board\_squares[0][2].text in ["X", "O"]:
+
+        winner = board\_squares[0][0]
+
+    elif (
+
+        board\_squares[1][0].text == board\_squares[1][1].text == board\_squares[1][2].text
+
+    ) and board\_squares[1][2].text in ["X", "O"]:
+
+        winner = board\_squares[1][0]
+
+    elif (
+
+        board\_squares[2][0].text == board\_squares[2][1].text == board\_squares[2][2].text
+
+    ) and board\_squares[2][2].text in ["X", "O"]:
+
+        winner = board\_squares[2][0]
+
+
+
+    # Horizontal lines
+
+    elif (
+
+        board\_squares[0][0].text == board\_squares[1][0].text == board\_squares[2][0].text
+
+    ) and board\_squares[2][0].text in ["X", "O"]:
+
+        winner = board\_squares[0][0]
+
+    elif (
+
+        board\_squares[0][1].text == board\_squares[1][1].text == board\_squares[2][1].text
+
+    ) and board\_squares[2][1].text in ["X", "O"]:
+
+        winner = board\_squares[0][1]
+
+    elif (
+
+        board\_squares[0][2].text == board\_squares[1][2].text == board\_squares[2][2].text
+
+    ) and board\_squares[2][2].text in ["X", "O"]:
+
+        winner = board\_squares[0][2]
+
+
+
+    # Diagonals
+
+    elif (
+
+        board\_squares[0][0].text == board\_squares[1][1].text == board\_squares[2][2].text
+
+    ) and board\_squares[2][2].text in ["X", "O"]:
+
+        winner = board\_squares[0][0]
+
+    elif (
+
+        board\_squares[2][0].text == board\_squares[1][1].text == board\_squares[0][2].text
+
+    ) and board\_squares[0][2].text in ["X", "O"]:
+
+        winner = board\_squares[0][2]
+
+        
+
+    if winner is not None:
+
+        message.value = winner.text + " wins!"
+
+    elif moves\_taken() == 9:
+
+        message.value = "It's a draw"
+
+
+
+def moves\_taken():
+
+    moves = 0
+
+    for row in board\_squares:
+
+        for col in row:
+
+            if col.text == "X" or col.text == "O":
+
+                moves = moves + 1
+
+    return moves
+
+
+
+# rejouer
+
+def rejouer():
+
+    global board\_squares, turn, message
+
+    board\_squares = clear\_board()
+
+    turn = "X"
+
+    message.value = "New Game: It is your turn, " + turn
+
+
+
+# quitter
+
+def quitter():
+
+    global app
+
+    app.destroy()
+
+
+
+# Variables -------------
+
+turn = "X"
+
+
+
+# App -------------------
+
+app = App("Tic tac toe")
+
+
+
+menu\_bar = MenuBar(app,
+
+                  toplevel=["File"],
+
+                  options=[
+
+                      [ ["File Rejouer", rejouer], ["Quitter", quitter]],
+
+                    ])
+
+board = Box(app, layout="grid")
+
+board\_squares = clear\_board()
+
+message = Text(app, text="It is your turn, " + turn)
+
+
+
+app.display()
+
+# fin de Fichier tictactoe.py
+
+
+
+######################################
+
+########################################################################################################################################################
+
+##################################################################################################################
+
+
+
+##################################################################################################################
+
+
+
+
+
+
+
+    # Fichier tictactoe.py
+
+    # Imports ---------------
+
+    from guizero import App, Box, PushButton, Text
+
+   * 
+
+    # Functions -------------
+
+    def clear\_board():
+
+        new\_board = [[None, None, None], [None, None, None], [None, None, None]]
+
+        for x in range(3):
+
+            for y in range(3):
+
+                button = PushButton(board, text="", grid=[x, y], width=3, command=choose\_square, args=[x,y])
+
+                new\_board[x][y] = button
+
+        return new\_board
+
+    
+
+    def choose\_square(x, y):
+
+        board\_squares[x][y].text = turn
+
+        board\_squares[x][y].disable()
+
+        toggle\_player()
+
+        check\_win()
+
+    
+
+    def toggle\_player():
+
+        global turn
+
+        if turn == "X":
+
+            turn = "O"
+
+        else:
+
+            turn = "X"
+
+        message.value = "It is your turn, " + turn
+
+    
+
+    def check\_win():
+
+        winner = None
+
+    
+
+        # Vertical lines
+
+        if (
+
+            board\_squares[0][0].text == board\_squares[0][1].text == board\_squares[0][2].text
+
+        ) and board\_squares[0][2].text in ["X", "O"]:
+
+            winner = board\_squares[0][0]
+
+        elif (
+
+            board\_squares[1][0].text == board\_squares[1][1].text == board\_squares[1][2].text
+
+        ) and board\_squares[1][2].text in ["X", "O"]:
+
+            winner = board\_squares[1][0]
+
+        elif (
+
+            board\_squares[2][0].text == board\_squares[2][1].text == board\_squares[2][2].text
+
+        ) and board\_squares[2][2].text in ["X", "O"]:
+
+            winner = board\_squares[2][0]
+
+    
+
+        # Horizontal lines
+
+        elif (
+
+            board\_squares[0][0].text == board\_squares[1][0].text == board\_squares[2][0].text
+
+        ) and board\_squares[2][0].text in ["X", "O"]:
+
+            winner = board\_squares[0][0]
+
+        elif (
+
+            board\_squares[0][1].text == board\_squares[1][1].text == board\_squares[2][1].text
+
+        ) and board\_squares[2][1].text in ["X", "O"]:
+
+            winner = board\_squares[0][1]
+
+        elif (
+
+            board\_squares[0][2].text == board\_squares[1][2].text == board\_squares[2][2].text
+
+        ) and board\_squares[2][2].text in ["X", "O"]:
+
+            winner = board\_squares[0][2]
+
+    
+
+        # Diagonals
+
+        elif (
+
+            board\_squares[0][0].text == board\_squares[1][1].text == board\_squares[2][2].text
+
+        ) and board\_squares[2][2].text in ["X", "O"]:
+
+            winner = board\_squares[0][0]
+
+        elif (
+
+            board\_squares[2][0].text == board\_squares[1][1].text == board\_squares[0][2].text
+
+        ) and board\_squares[0][2].text in ["X", "O"]:
+
+            winner = board\_squares[0][2]
+
+            
+
+        if winner is not None:
+
+            message.value = winner.text + " wins!"
+
+        elif moves\_taken() == 9:
+
+            message.value = "It's a draw"
+
+    
+
+    def moves\_taken():
+
+        moves = 0
+
+        for row in board\_squares:
+
+            for col in row:
+
+                if col.text == "X" or col.text == "O":
+
+                    moves = moves + 1
+
+        return moves
+
+    
+
+            
+
+    # Variables -------------
+
+    turn = "X"
+
+    
+
+    # App -------------------
+
+    app = App("Tic tac toe")
+
+    
+
+    board = Box(app, layout="grid")
+
+    board\_squares = clear\_board()
+
+    message = Text(app, text="It is your turn, " + turn)
+
+    
+
+    app.display()
+
+    # fin de Fichier tictactoe.py
+
+
+
+Références;
+
+   * [https://lawsie.github.io/guizero/](https://lawsie.github.io/guizero/)
+
+
+
+
+## Mardi 9 novembre
+
+Animation de 18h à 20h à la MPT.
+
+
+
+En présentiel à la MPT, avec Pass Sanitaire ou test négatif pour les adultes.
+
+
+
+Au programme:
+
+   * Outils de configuration de la Raspberry Pi (le réseau)
+   * Jeu en Python avec GuiZero
+       * Création de la fenêtre et des Widgets de base
+
+
+Références;
+
+   * [https://lawsie.github.io/guizero/](https://lawsie.github.io/guizero/)
+   * [https://thonny.org/](https://thonny.org/)   éditeur Python pour débutant
+
+
+## Samedi 23 octobre
+
+Animation de 10h à 12h à la MPT.
+
+
+
+En présentiel à la MPT, avec Pass Sanitaire ou test négatif pour les adultes.
+
+
+
+Au programme:
+
+   * Outils de configuration de la Raspberry Pi (le réseau)
+   * Algorithme avec AlgoBox (suite)
+       * Implémentation en Scratch et Python
+
+
+
+
+## Mardi 12 octobre
+
+Animation de 18h à 20h à la MPT.
+
+
+
+En présentiel à la MPT, avec Pass Sanitaire ou test négatif pour tous.
+
+
+
+Annonce: Install Partly le mardi 19 octobre de 18h à 20h au Fablab Elorn (sur inscription) au Lycée de l'Elorn
+
+
+
+Au programme:
+
+   * Algorithme avec AlgoBox
+   * Implémentation en Scratch et Python
+
+
+Références:
+
+   * AlgoBox: [https://www.xm1math.net/algobox/](https://www.xm1math.net/algobox/)
+   * Scratch: [https://scratch.mit.edu/](https://scratch.mit.edu/)
+       * Blender.org: [https://www.blender.org/](https://www.blender.org/)
+   * Make Human: [http://www.makehumancommunity.org/content/plugins.html](http://www.makehumancommunity.org/content/plugins.html)
+   * Emulateur Android: [http://www.makehumancommunity.org/content/plugins.html](http://www.makehumancommunity.org/content/plugins.html)
+
+
+
+
+
+
+
+
+## Samedi 25 septembre
+
+Animation de 10h à 12h à la MPT.
+
+
+
+En présentiel à la MPT, avec Pass Sanitaire ou test négatif pour les adultes.
+
+
+
+[https://www.raspberrypi.org/](https://www.raspberrypi.org/)
+
+[https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-os-32-bit](https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-os-32-bit)
+
+
+
+[https://www.raspberrypi.org/books-magazines/](https://www.raspberrypi.org/books-magazines/)
+
+[https://magpi.raspberrypi.org/books](https://magpi.raspberrypi.org/books)
+
+
+
+Installation RaspberryPi Os sur carte SD:
+
+   * installation de rpi-imager: outil pour écrire l'image RaspberryPi OS sur une carte SD: [https://www.raspberrypi.org/software/](https://www.raspberrypi.org/software/)
+   * utilisation de rpi-imager pour écrire l'image: [https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-os-32-bit](https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-os-32-bit)
+
+
+Algorithme avec Algobox:
+
+   * installation de Algobox:
+    $ sudo apt update
+
+    $ sudo apt upgrade
+
+    $ sudo apt install algobox
+
+
+
+
+
+## Mardi 14 septembre
+
+Animation de 18h à 20h à la MPT.
+
+
+
+En présentiel à la MPT, avec Pass Sanitaire ou test négatif pour les adultes.
+
+
+
+   * Tour de table
+   * Présentation Raspberry Pi
+       * Carte: 3B, 3B+, 4B: [https://fr.wikipedia.org/wiki/Raspberry\_Pi](https://fr.wikipedia.org/wiki/Raspberry\_Pi)
+       * Alimentation: [https://www.raspberrypi-france.fr/guide/accessoires-raspberry-pi/](https://www.raspberrypi-france.fr/guide/accessoires-raspberry-pi/)
+       * Câble HDMI: [https://fr.wikipedia.org/wiki/High-Definition\_Multimedia\_Interface#Types\_de\_connecteurs](https://fr.wikipedia.org/wiki/High-Definition\_Multimedia\_Interface#Types\_de\_connecteurs)
+       * Boîtier: pour protéger
+       * Carte SD: 16 Go minimum (en prendre 2 au cas où une des deux tombe en panne)
+   * Le système binaire:
+       * Base 2
+       * Algèbre de Boole: [https://fr.wikipedia.org/wiki/Alg%C3%A8bre\_de\_Boole\_(logique)](https://fr.wikipedia.org/wiki/Alg%C3%A8bre\_de\_Boole\_(logique))
+       * Mise en oeuvre en utilisant Logisim (à continuer à la prochaine séance)
+       * Fonctions logiques: [https://fr.wikipedia.org/wiki/Fonction\_logique](https://fr.wikipedia.org/wiki/Fonction\_logique)
+           * ET
+           * OU
+           * NON
+   * Architecture des ordinateurs
+       * [https://fr.wikipedia.org/wiki/Architecture\_mat%C3%A9rielle](https://fr.wikipedia.org/wiki/Architecture\_mat%C3%A9rielle)
+       * Von Neumann: [https://fr.wikipedia.org/wiki/Architecture\_de\_von\_Neumann](https://fr.wikipedia.org/wiki/Architecture\_de\_von\_Neumann)
+       * Harvard: [https://fr.wikipedia.org/wiki/Architecture\_de\_type\_Harvard](https://fr.wikipedia.org/wiki/Architecture\_de\_type\_Harvard)
+   * Installation de Logisim
+       * Mise à jour du système: [https://fr.wikipedia.org/wiki/Raspberry\_Pi\_OS](https://fr.wikipedia.org/wiki/Raspberry\_Pi\_OS)
+           * dans un terminal:
+    $ sudo apt update
+
+    $ sudo apt upgrade
+
+# touche <entrée>
+
+    $ sudo apt install logisim
+
+# touche <entrée>
+
+
+
+Référence:
+
+   * Communauté française: [https://raspberry-pi.fr/](https://raspberry-pi.fr/)
+   * Site officiel: [https://www.raspberrypi.org/](https://www.raspberrypi.org/)
+   * Revendeurs Raspberry Pi en ligne:
+       * [https://www.kubii.fr/](https://www.kubii.fr/)
+       * [https://www.gotronic.fr/](https://www.gotronic.fr/)
+   * [https://fr.wikipedia.org/wiki/Pascaline](https://fr.wikipedia.org/wiki/Pascaline)
+   * [https://fr.wikipedia.org/wiki/Syst%C3%A8me\_binaire](https://fr.wikipedia.org/wiki/Syst%C3%A8me\_binaire)
+   * Logisim: [http://www.cburch.com/logisim/](http://www.cburch.com/logisim/)
+
+
+
+
+## Fin de saison
+
+
+
+## **Saison 2020/2021**
+
+
+
+# **Lien de la visio:  mdl29.net/visio**
+
+
+
+## Samedi 26 juin: pas de séance (tour de France)
+
+EXcusez moi, j'ai bouffé la consigne pour mardi dernier. J'étais persuadé que c'était le 29...Et aujourd'hui, pas de séance.!!!Je me suis retrouvé comme un c.. sur le site de visio.
+
+A+ tous
+
+
+
+Jo
+
+
+
+## Mardi 22 juin en présentiel
+
+Animation de 18h à 20h à la MPT.
+
+
+
+[https://github.com/landerneRPi](https://github.com/landerneRPi)
+
+
+
+Bilan de l'année et perspectives
+
+
+
+Dernière séance
+
+
+
+## Samedi 19 juin (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+       * guizero (suite): Logique du jeu
+
+
+
+
+    # programme tictactoe.py
+
+     
+
+    # import guizero
+
+    from guizero import App, Box, PushButton, Text
+
+     
+
+    # variables gestion joueur
+
+    joueur1 = "A"
+
+    couleur\_joueur1="red"
+
+    joueur2 = "B"
+
+    couleur\_joueur2="blue"
+
+    # variable du joueur courant
+
+    tour\_joueur = joueur1
+
+    couleur\_joueur\_courant = couleur\_joueur1
+
+    # nombre de coups
+
+    nombre\_coup = 0
+
+    # nombre\_coup = 9
+
+     
+
+    # tableau des boutons
+
+    # tableau\_boutons = [ [btn00, btn10, btn20],
+
+    #                     [btn01, btn11, btn21],
+
+    #                     [btn02, btn12, btn22]
+
+    #                   ]
+
+    tableau\_boutons = [ [None,None,None],
+
+                        [None,None,None],
+
+                        [None,None,None]]
+
+     
+
+    # dessiner la grille
+
+    def dessiner\_grille():
+
+        # grille de 3x3 PushButton
+
+        # création des boutons
+
+        # boucle de 0 à 2 => 3 élements
+
+        for x in range(3):
+
+            # boucle de 0 à 2 => 3 élements
+
+            for y in range(3):
+
+                monBouton = PushButton(grille\_jeu, text=f"N{x}{y}", grid=[x,y], command=selection, args=[x,y])
+
+                tableau\_boutons[x][y] = monBouton
+
+     
+
+    # methodes de selection des boutons
+
+    def reset():
+
+        global tour\_joueur, couleur\_joueur\_courant, nombre\_coup
+
+        tour\_joueur = joueur1
+
+        couleur\_joueur\_courant = couleur\_joueur1
+
+        nombre\_coup = 0
+
+        dessiner\_grille()
+
+        message\_joueur.value = "Au tour du joueur: " + tour\_joueur
+
+     
+
+    # methodes de selection des boutons
+
+    def selection(x, y):
+
+        global tour\_joueur, couleur\_joueur\_courant, nombre\_coup
+
+        # incrementer le nombre de coups
+
+        # nombre\_coup = nombre\_coup + 1
+
+        nombre\_coup += 1
+
+        # nombre\_coup++ : n'existe pas en python
+
+        # nombre\_coup += 1
+
+        
+
+        # selectionne le bouton et le desactiver
+
+        monBouton = tableau\_boutons[x][y]
+
+        monBouton.text = tour\_joueur
+
+        monBouton.bg = couleur\_joueur\_courant
+
+        monBouton.disable()
+
+        # changement de joueur
+
+        if tour\_joueur == joueur1: 
+
+            tour\_joueur = joueur2
+
+            couleur\_joueur\_courant = couleur\_joueur2
+
+        else:
+
+            tour\_joueur = joueur1
+
+            couleur\_joueur\_courant = couleur\_joueur1
+
+     
+
+        # condition gagnant est fausse: Nulle
+
+        gagnant = None
+
+        # vérifier si on a un gagnant
+
+        # vérifier les lignes
+
+        for ligne in range(3):
+
+            if (tableau\_boutons[ligne][0].text == tableau\_boutons[ligne][1].text == tableau\_boutons[ligne][2].text):
+
+                gagnant = tableau\_boutons[ligne][0].text
+
+                break
+
+            # instructions suivantes
+
+        # fin de boucle
+
+        if not gagnant:
+
+            # vérifier les colonnes
+
+            for col in range(3):
+
+                if (tableau\_boutons[0][col].text == tableau\_boutons[1][col].text == tableau\_boutons[2][col].text):
+
+                    gagnant = tableau\_boutons[0][col].text
+
+                    break
+
+            # fin de boucle
+
+            if not gagnant:
+
+                # vérifier les deux diagonales
+
+                if (tableau\_boutons[0][0].text == tableau\_boutons[1][1].text == tableau\_boutons[2][2].text):
+
+                    gagnant = tableau\_boutons[0][0].text
+
+                elif (tableau\_boutons[2][0].text == tableau\_boutons[1][1].text == tableau\_boutons[0][2].text):
+
+                    gagnant = tableau\_boutons[2][0].text
+
+        
+
+        # si gagnant
+
+        if gagnant:
+
+            message\_joueur.value = "Le gagnant est le joueur: " + gagnant
+
+            # désactiver tous les boutons
+
+            for ligne in range(3):
+
+                for col in range(3):
+
+                    tableau\_boutons[ligne][col].disable()
+
+        # vérifier le nombre de coups: 9 => fin de la partie
+
+        elif nombre\_coup == 9:
+
+            message\_joueur.value = "Fin de la partie, match null"
+
+        else :
+
+            # afficher le message pour le joueur suivant
+
+            message\_joueur.value = "Au tour du joueur: " + tour\_joueur
+
+     
+
+    # Application: fenetre principale
+
+     
+
+    app = App("Tic tac toe")
+
+     
+
+    # premiere boite pour afficher l'entete
+
+    entete = Box(app)
+
+    message\_jeu = Text(entete, text="Bienvenue dans Tic Tac Toe")
+
+    # deuxieme boite pour afficher la grille de bouton
+
+    grille\_jeu = Box(app, layout="grid")
+
+    dessiner\_grille()
+
+     
+
+    # troisieme boite pour afficher le tour du joueur
+
+    message\_box = Box(app)
+
+    message\_joueur = Text(message\_box, text="Au tour du joueur: " + tour\_joueur)
+
+    bouton\_reset\_jeu = PushButton(app, text="Nouvelle partie", command=reset)
+
+     
+
+    # affichage de la fenetre et attend les evenements (graphique: souris, clavier)
+
+    app.display() # boucle principale d'attente sur les evenements
+
+     
+
+    # fin du programme tictactoe.py
+
+
+
+
+
+## Samedi 12 juin (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+       * guizero (suite): Layout et Grid: création du jeu
+
+
+
+
+    # programme tictactoe.py
+
+    
+
+    # import guizero
+
+    from guizero import App, Box, PushButton, Text
+
+    
+
+    # tableau des boutons
+
+    # tableau\_boutons = [ [btn00, btn10, btn20],
+
+    #                     [btn01, btn11, btn21],
+
+    #                     [btn02, btn12, btn22]
+
+    #                   ]
+
+    tableau\_boutons = [ [None,None,None],
+
+                        [None,None,None],
+
+                        [None,None,None]]
+
+    
+
+    # methodes de selection des boutons
+
+    def selection(x, y):
+
+        # selectionne le bouton et le desactiver
+
+        monBouton = tableau\_boutons[x][y]
+
+        monBouton.text = "B"
+
+        monBouton.bg = "red" 
+
+        monBouton.disable()
+
+    
+
+    # Application: fenetre principale
+
+    
+
+    app = App("Tic tac toe")
+
+    
+
+    # premiere boite pour afficher l'entete
+
+    entete = Box(app)
+
+    message\_jeu = Text(entete, text="Bienvenue dans Tic Tac Toe")
+
+    # deuxieme boite pour afficher la grille de bouton
+
+    grille\_jeu = Box(app, layout="grid")
+
+    # grille de 3x3 PushButton
+
+    # création des boutons
+
+    # boucle de 0 à 2 => 3 élements
+
+    for x in range(3):
+
+        # boucle de 0 à 2 => 3 élements
+
+        for y in range(3):
+
+            monBouton = PushButton(grille\_jeu, text="N", grid=[x,y], command=selection, args=[x,y])
+
+            tableau\_boutons[x][y] = monBouton
+
+    
+
+    # troisieme boite pour afficher le tour du joueur
+
+    message\_box = Box(app)
+
+    message\_joueur = Text(message\_box, text="Au tour du joueur: ")
+
+    
+
+    # affichage de la fenetre et attend les evenements (graphique: souris, clavier)
+
+    app.display() # boucle principale d'attente sur les evenements
+
+    
+
+    # fin du programme tictactoe.py
+
+    
+
+
+
+
+
+Références:
+
+   * [https://appinventor.mit.edu/](https://appinventor.mit.edu/)
+   * [https://kiwibrowser.com/](https://kiwibrowser.com/)
+   * [https://fr.wikipedia.org/wiki/Shell\_Unix](https://fr.wikipedia.org/wiki/Shell\_Unix)
+   * [https://www.youtube.com/watch?v=LamjAFnybo0]([]https://www.youtube.com/watch?v=LamjAFnybo0[])
+
+
+
+
+## Samedi 5 juin (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+       * guizero (suite): Layout
+   * Initiation HTML/CSS/Javascript
+       * éléments de base d'une page HTML (suite)
+
+
+Références:
+
+   * [https://www.brest.fr/actus-agenda/agenda/agenda-2563/en-ligne-table-ronde-le-code-se-conjugue-au-feminin-1037397.html](https://www.brest.fr/actus-agenda/agenda/agenda-2563/en-ligne-table-ronde-le-code-se-conjugue-au-feminin-1037397.html)
+   * [https://zoom.us/j/96355726041?pwd=QUptRUxBQ0p0SWRHSmN5dGxybldPUT09](https://zoom.us/j/96355726041?pwd=QUptRUxBQ0p0SWRHSmN5dGxybldPUT09)
+   * [https://www.a-brest.net/article24769.html](https://www.a-brest.net/article24769.html)
+   * [https://lawsie.github.io/guizero/layout/](https://lawsie.github.io/guizero/layout/)
+
+
+
+
+Code Jeu du pendu
+
+
+
+"""
+
+Created on Tue Mar 24 07:36:15 2020
+
+@author: @Xalava
+
+"""
+
+
+
+import random
+
+choix = ["casserole", "cuillere", "patate", "souris"]
+
+solution = random.choice(choix)
+
+
+
+solution = "casserole"
+
+tentatives = 7
+
+affichage = ""
+
+lettres\_trouvees = ""
+
+
+
+for l in solution:
+
+  affichage = affichage + "\_ "
+
+
+
+print(">> Bienvenue dans le pendu <<")
+
+
+
+while tentatives > 0:
+
+  print("\nMot à deviner : ", affichage)
+
+  proposition = input("proposez une lettre : ")[0:1].lower()
+
+
+
+  if proposition in solution:
+
+      lettres\_trouvees = lettres\_trouvees + proposition
+
+      print("-> Bien vu!")
+
+  else:
+
+    tentatives = tentatives - 1
+
+    print("-> Nope\n")
+
+    if tentatives==0:
+
+        print(" ==========Y= ")
+
+    if tentatives<=1:
+
+        print(" ||/       |  ")
+
+    if tentatives<=2:
+
+        print(" ||        0  ")
+
+    if tentatives<=3:
+
+        print(" ||       /|\ ")
+
+    if tentatives<=4:
+
+        print(" ||       /|  ")
+
+    if tentatives<=5:                    
+
+        print("/||           ")
+
+    if tentatives<=6:
+
+        print("==============\n")
+
+
+
+  affichage = ""
+
+  for x in solution:
+
+      if x in lettres\_trouvees:
+
+          affichage += x + " "
+
+      else:
+
+          affichage += "\_ "
+
+
+
+  if "\_" not in affichage:
+
+      print(">>> Gagné! <<<")
+
+      break
+
+     
+
+print("\n    * Fin de la partie *    ")
+
+
+
+
+
+**Supprimer la valeur dans le champ texte**
+
+    # exercice: exo7\_1\_guizero.py
+
+    
+
+    from guizero import App, Text, Picture, TextBox, PushButton
+
+    
+
+    # fonctions pour le push button
+
+    def afficher\_name():
+
+        print("le nom est ", entree.value)
+
+    
+
+    def cliquer\_pelle(tarte, gateau):
+
+        message\_pelle.value = "J'ai cliqué sur la pelle " + tarte
+
+        # désactive le bouton
+
+        button\_image.disable()
+
+    
+
+    # events pour le TextBox
+
+    def effacer\_valeur():
+
+        entree.value = ""
+
+    
+
+    
+
+    # la fenêtre de l'application
+
+    app = App("Mon Application")
+
+    app.bg = "yellow"
+
+    app.width = 800
+
+    app.height = 800
+
+    
+
+    # les widgets
+
+    message = Text(app, text="Bonjour le monde !", color="blue")
+
+    message.text\_size=50
+
+    message.bg = "red"
+
+    
+
+    entree = TextBox(app, text="entrer votre nom",  width=20)
+
+    entree.when\_clicked = effacer\_valeur
+
+    
+
+    # bouton avec méthode callback quand le bouton est appuyé
+
+    button\_nom = PushButton(app, text="afficher le nom", command=afficher\_name)
+
+    button\_nom.bg = "green"
+
+    
+
+    # [https://icones8.fr/icon/23867/open-source](https://icones8.fr/icon/23867/open-source)
+
+    button\_image = PushButton(app, image="pelle.png", width=40, height=40, command=cliquer\_pelle, args=["à tarte", "à gâteau"])
+
+    message\_pelle = Text(app, text="Message de la pelle", width=60)
+
+    
+
+    logo = Picture(app, image="logo\_landerneau.png")
+
+    
+
+    # affichage de la fenêtre
+
+    app.display()
+
+    
+
+    # fin exercice: exo7\_1\_guizero.py
+
+
+
+
+
+
+
+**Gérer la disposition (layout) des widgets dans la fenêtre avec une grille (grid):**
+
+    # exercice: exo8\_guizero.py
+
+    
+
+    from guizero import App, Box, Text, Picture, TextBox, PushButton
+
+    
+
+    # fonctions pour le push button
+
+    def afficher\_name():
+
+        print("le nom est ", entree.value)
+
+    
+
+    def cliquer\_pelle(tarte, gateau):
+
+        message\_pelle.value = "J'ai cliqué sur la pelle " + tarte
+
+        # désactive le bouton
+
+        button\_image.disable()
+
+    
+
+    
+
+    # la fenêtre de l'application
+
+    app = App("Mon Application", height=800, width=1200, layout="grid") # layout: 'grid' ou 'auto'
+
+    app.bg = "yellow"
+
+    
+
+    # les widgets
+
+    message = Text(app, text="Bonjour le monde !", color="blue", grid=[0,0])
+
+    message.text\_size=50
+
+    message.bg = "red"
+
+    
+
+    entree = TextBox(app, text="entrer votre nom",  width=20, grid=[0,1])
+
+    
+
+    # bouton avec méthode callback quand le bouton est appuyé
+
+    button\_nom = PushButton(app, text="afficher le nom", command=afficher\_name, grid=[1,1])
+
+    button\_nom.bg = "green"
+
+    
+
+    # [https://icones8.fr/icon/23867/open-source](https://icones8.fr/icon/23867/open-source)
+
+    button\_image = PushButton(app, image="pelle.png", width=40, height=40,
+
+            command=cliquer\_pelle, args=["à tarte", "à gâteau"],grid=[0,2])
+
+    message\_pelle = Text(app, text="Message de la pelle", width=60, grid=[1,2])
+
+    
+
+    logo = Picture(app, image="logo\_landerneau.png", grid=[0,3])
+
+    
+
+    # affichage de la fenêtre
+
+    app.display()
+
+    
+
+    # fin exercice: exo8\_guizero.py
+
+
+
+
+
+**Gérer la disposition (layout) des widgets dans la fenêtre avec une grille (fusion de cellules):**
+
+    # exercice: exo8\_1\_guizero.py
+
+    
+
+    from guizero import App, Box, Text, Picture, TextBox, PushButton
+
+    
+
+    # fonctions pour le push button
+
+    def afficher\_name():
+
+        print("le nom est ", entree.value)
+
+    
+
+    def cliquer\_pelle(tarte, gateau):
+
+        message\_pelle.value = "J'ai cliqué sur la pelle " + tarte
+
+        # désactive le bouton
+
+        button\_image.disable()
+
+    
+
+    
+
+    # la fenêtre de l'application
+
+    app = App("Mon Application", height=800, width=1200, layout="grid") # layout: 'grid' ou 'auto'
+
+    app.bg = "yellow"
+
+    
+
+    # les widgets
+
+    message = Text(app, text="Bonjour le monde !", color="blue", grid=[0,0])
+
+    message.text\_size=50
+
+    message.bg = "red"
+
+    
+
+    entree = TextBox(app, text="entrer votre nom",  width=20, grid=[0,1], align="left")
+
+    
+
+    # bouton avec méthode callback quand le bouton est appuyé
+
+    button\_nom = PushButton(app, text="afficher le nom", command=afficher\_name, grid=[1,1], align="right")
+
+    button\_nom.bg = "green"
+
+    
+
+    # [https://icones8.fr/icon/23867/open-source](https://icones8.fr/icon/23867/open-source)
+
+    button\_image = PushButton(app, image="pelle.png", width=40, height=40,
+
+            command=cliquer\_pelle, args=["à tarte", "à gâteau"],grid=[0,2])
+
+    message\_pelle = Text(app, text="Message de la pelle", width=60, grid=[1,2])
+
+    
+
+    logo = Picture(app, image="logo\_landerneau.png", grid=[0,3,2,1])
+
+    
+
+    # affichage de la fenêtre
+
+    app.display()
+
+    
+
+    # fin exercice: exo8\_1\_guizero.py
+
+
+
+
+
+**Gérer la disposition (layout) des widgets dans la fenêtre avec une grille et une boîte (grid + box):**
+
+    # exercice: exo9\_guizero.py
+
+    
+
+    from guizero import App, Box, Text, Picture, TextBox, PushButton
+
+    
+
+    # fonctions pour le push button
+
+    def afficher\_name():
+
+        print("le nom est ", entree.value)
+
+    
+
+    def cliquer\_pelle(tarte, gateau):
+
+        message\_pelle.value = "J'ai cliqué sur la pelle " + tarte
+
+        # désactive le bouton
+
+        button\_image.disable()
+
+    
+
+    
+
+    # la fenêtre de l'application
+
+    app = App("Mon Application", height=800, width=1000, layout="auto") # layout: 'grid' ou 'auto'
+
+    app.bg = "yellow"
+
+    
+
+    box = Box(app, layout="grid", border=True)
+
+    
+
+    # les widgets
+
+    message = Text(box, text="Bonjour le monde !", color="blue", grid=[0,0])
+
+    message.text\_size=50
+
+    message.bg = "red"
+
+    
+
+    entree = TextBox(box, text="entrer votre nom",  width=20, grid=[0,1])
+
+    
+
+    # bouton avec méthode callback quand le bouton est appuyé
+
+    button\_nom = PushButton(box, text="afficher le nom", command=afficher\_name, grid=[1,1])
+
+    button\_nom.bg = "green"
+
+    
+
+    # [https://icones8.fr/icon/23867/open-source](https://icones8.fr/icon/23867/open-source)
+
+    button\_image = PushButton(box, image="pelle.png", width=40, height=40,
+
+            command=cliquer\_pelle, args=["à tarte", "à gâteau"],grid=[0,2])
+
+    message\_pelle = Text(box, text="Message de la pelle", width=60, grid=[1,2])
+
+    
+
+    logo = Picture(app, image="logo\_landerneau.png")
+
+    
+
+    # affichage de la fenêtre
+
+    app.display()
+
+    
+
+    # fin exercice: exo9\_guizero.py
+
+
+
+
+
+
+
+## Samedi 29 mai (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+       * guizero (suite): Bouton
+   * Initiation HTML/CSS/Javascript
+       * éléments de base d'une page HTML (suite)
+
+
+
+
+Ajouter une TextBox:
+
+# exercice: exo6\_guizero.py
+
+
+
+from guizero import App, Text, Picture, TextBox
+
+
+
+app = App("Mon Application")
+
+app.bg = "yellow"
+
+app.width = 800
+
+app.height = 800
+
+
+
+message = Text(app, text="Bonjour le monde !", color="blue")
+
+message.text\_size=50
+
+message.bg = "red"
+
+
+
+entree = TextBox(app, text="entrer votre nom",  width=20)
+
+
+
+logo = Picture(app, image="logo\_landerneau.png")
+
+
+
+app.display()
+
+
+
+# fin exercice: exo6\_guizero.py
+
+
+
+
+
+Ajouter un bouton PushButton
+
+# exercice: exo7\_guizero.py
+
+
+
+from guizero import App, Text, Picture, TextBox, PushButton
+
+
+
+# fonctions pour le push button
+
+def afficher\_name():
+
+    print("le nom est ", entree.value)
+
+
+
+def cliquer\_pelle(tarte, gateau):
+
+    message\_pelle.value = "J'ai cliqué sur la pelle " + tarte
+
+    # désactive le bouton
+
+    button\_image.disable()
+
+
+
+# la fenêtre de l'application
+
+app = App("Mon Application")
+
+app.bg = "yellow"
+
+app.width = 800
+
+app.height = 800
+
+
+
+# les widgets
+
+message = Text(app, text="Bonjour le monde !", color="blue")
+
+message.text\_size=50
+
+message.bg = "red"
+
+
+
+entree = TextBox(app, text="entrer votre nom",  width=20)
+
+
+
+# bouton avec méthode callback quand le bouton est appuyé
+
+button\_nom = PushButton(app, text="afficher le nom", command=afficher\_name)
+
+button\_nom.bg = "green"
+
+
+
+# [https://icones8.fr/icon/23867/open-source](https://icones8.fr/icon/23867/open-source)
+
+button\_image = PushButton(app, image="pelle.png", width=40, height=40, command=cliquer\_pelle, args=["à tarte", "à gâteau"])
+
+message\_pelle = Text(app, text="Message de la pelle", width=60)
+
+
+
+
+
+logo = Picture(app, image="logo\_landerneau.png")
+
+
+
+# affichage de la fenêtre
+
+app.display()
+
+
+
+# fin exercice: exo7\_guizero.py
+
+
+
+
+
+Il manque le paquet Python pillow pour retailler l'image:
+
+$ pip3 install pillow
+
+
+
+
+
+
+
+Références:
+
+   * [https://libre-en-fete.net/2021/](https://libre-en-fete.net/2021/)
+   * [https://icones8.fr/icon/23867/open-source](https://icones8.fr/icon/23867/open-source)
+   * [https://papy-tux.legtux.org/doc1237/index.html](https://papy-tux.legtux.org/doc1237/index.html)
+
+
+
+
+## Samedi 22 mai (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+       * guizero (suite):
+   * Initiation HTML/CSS/Javascript
+       * éléments de base d'une page HTML (suite)
+
+
+éditeur de texte: Geany 
+
+Installation de geany (version 1.36 sur Ubuntu 20.04) et ses plugins (installation de tous les plugins)
+
+$ sudo apt install geany geany-plugins
+
+
+
+Utilisation de geany pour développer en Python3:
+
+   * Aller dans Menu **Construire / Définir les commandes de construction**
+   * Changer dans **Commandes pour Python / Compile**: python3 au lieu de python
+   * Changer dans **Commande d'exécution / Execute**: python3 au lieu de python
+   * Valider
+
+
+Utilisation des widgets graphiques avec guizero:
+
+   * Application
+   * Text
+   * Picture
+   * TextBox
+   * PushButton (et commande de rappel)
+
+
+Pour convertir les images dans le format approprié (PNG/GIF), utilisation de imagemagick ([https://imagemagick.org/script/index.php)](https://imagemagick.org/script/index.php)):
+
+$ sudo apt install imagemagick
+
+
+
+Convertir une image JPG vers PNG:
+
+$ convert <image>.jpg <image>.png
+
+
+
+Afficher l'image:
+
+$ display <image>.png
+
+
+
+Pour afficher et rétrécir une image directement avec le widget PushButton, il faut installer PIL (pillow):
+
+$ pip install pillow
+
+
+
+# exercice: exo\_guizero.py
+
+from guizero import App, Text
+
+
+
+app = App(title="Mon application")
+
+app.bg = "yellow"
+
+app.width = 800
+
+app.height = 800
+
+
+
+message = Text(app, text="Bonjour le monde !", color="blue")
+
+message.text\_size=50
+
+message.bg = "red"
+
+
+
+app.display()
+
+# fin exercice: exo\_guizero.py
+
+
+
+
+
+
+
+# exercice: exo5\_guizero.py
+
+
+
+from guizero import App, Text, Picture
+
+
+
+app = App("Mon Application")
+
+app.bg = "yellow"
+
+app.width = 800
+
+app.height = 800
+
+
+
+message = Text(app, text="Bonjour le monde !", color="blue")
+
+message.text\_size=50
+
+message.bg = "red"
+
+
+
+logo = Picture(app, image="logo\_landerneau.png")
+
+app.display()
+
+
+
+# fin exercice: exo5\_guizero.py
+
+
+
+Les tags HTML:
+
+   * quelques exemples de balises
+
+
+
+
+Références:
+
+   * Geany: [https://www.geany.org/](https://www.geany.org/)
+   * Guizero: [https://lawsie.github.io/guizero/](https://lawsie.github.io/guizero/)
+   * ImageMagick: [https://imagemagick.org/script/index.php](https://imagemagick.org/script/index.php)
+   * ffmpeg: [https://ffmpeg.org/](https://ffmpeg.org/)
+   * [https://en.wikipedia.org/wiki/Comparison\_of\_video\_container\_formats](https://en.wikipedia.org/wiki/Comparison\_of\_video\_container\_formats)
+   * [https://en.wikipedia.org/wiki/List\_of\_codecs](https://en.wikipedia.org/wiki/List\_of\_codecs)
+   * [https://en.wikipedia.org/wiki/Comparison\_of\_video\_codecs](https://en.wikipedia.org/wiki/Comparison\_of\_video\_codecs)
+   * [https://en.wikipedia.org/wiki/Raspberry\_Pi](https://en.wikipedia.org/wiki/Raspberry\_Pi)
+
+
+chercher comment faire une Image en fond transparent .
+
+
+
+
+
+## Samedi 15 mai (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+       * guizero
+   * Initiation HTML/CSS/Javascript
+       * serveur de page HTML avec Python
+       * éléments de base d'une page HTML
+
+
+Guizero: interface graphique
+
+
+
+$ cd travail/sources
+
+:~/travail/sources $ mkdir guizero\_exemple
+
+$ cd guizero\_exemple
+
+
+
+Création de l'environnement virtuel:
+
+$ python3 -m venv .venv
+
+
+
+Activation de l'environnement virtuel:
+
+$ source .venv/bin/activate
+
+
+
+Installation de la bibliothèque graphique guizero:
+
+$ source .venv/bin/activate
+
+
+
+
+
+Vérification de l'installation de guizero:
+
+$ python
+
+>>> import guizero
+
+
+
+Exemple: fichier gz\_exemple.py:
+
+----------
+
+    from guizero import App
+
+    
+
+    app = App(title="Mon application")
+
+    
+
+    app.display()
+
+----------
+
+
+
+Démarrer l'exemple:
+
+$ python gz\_exemple.py
+
+
+
+
+
+Ajouter un widget de Text:
+
+----------
+
+    from guizero import App, Text
+
+    
+
+    app = App(title="Mon application")
+
+    
+
+    message = Text(app, text="Bonjour le monde !")
+
+    app.display()
+
+----------
+
+
+
+Page HTML de base:
+
+---------
+
+    <!DOCTYPE html>
+
+    <html>
+
+        <head>
+
+            <title>Ma page HTML</title>
+
+            <meta charset="utf-8">
+
+        </head>
+
+        <body>
+
+            Message dans la page Web.
+
+        </body>
+
+    </html>
+
+----------------
+
+
+
+
+
+ $ ls -l
+
+-rw-r--r-- 1 pi pi 177 mai   15 11:48 index.html
+
+$ python3 -m http.server 
+
+Serving HTTP on 0.0.0.0 port 8000 ([http://0.0.0.0:8000/)](http://0.0.0.0:8000/)) ...
+
+
+
+Ouvrir un navigateur Web pour afficher la page.
+
+[http://raspberrypi.local:8000/](http://raspberrypi.local:8000/) ou
+
+[http://localhost:8000/](http://localhost:8000/)
+
+
+
+
+
+Références:
+
+   * [https://www.raspberrypi.org/books-magazines/](https://www.raspberrypi.org/books-magazines/) ## livres et magzines
+   * [https://www.wxpython.org/](https://www.wxpython.org/)
+   * [http://wxglade.sourceforge.net/docs/intro.html#program-windows](http://wxglade.sourceforge.net/docs/intro.html#program-windows)
+$ sudo apt install wxglade
+
+
+
+à vérifier avec Geany.
+
+
+
+
+
+**Deux semaines de pause et reprise le 15 mai**
+
+
+
+## Samedi 24 avril (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+   * Exemples module: Emulateur d'ecran WS2812 (ruban de LED)
+   * Initiation HTML/CSS/Javascript
+
+
+Simulation de ruban de LED neopixel:
+
+**Installation du simulateur vrtneopixel**:
+
+$ pip3 install vrtneopixel
+
+$ python3
+
+>>> from vrtneopixel import *
+
+
+
+**Installation de l'exemple**:
+
+$ cd travail/sources/
+
+$ git clone [https://github.com/Hackable-magazine/vrtneopixel](https://github.com/Hackable-magazine/vrtneopixel)
+
+$ cd vrtneopixel/
+
+$ cd vrtneopixel/sample/
+
+$ python3 strandtest.py 
+
+
+
+Exemple fichier:  exemple\_neopixel.py:
+
+----------------------
+
+from vrtneopixel import *
+
+import time
+
+# from neopixel import *
+
+
+
+# variables pour configurer le ruban de LED
+
+LED\_COUNT   = (1,30)
+
+LED\_PIN     = 18 # Broche ou GPIO
+
+LED\_FREQ\_HZ = 800000 # 800KHz
+
+LED\_DMA     = 5
+
+LED\_BRIGHTNESS = 255
+
+LED\_INVERT  = False
+
+
+
+# créer l'objet ruban,
+
+# une instance de la classe neopixel
+
+ruban = Adafruit\_NeoPixel(
+
+            LED\_COUNT,
+
+            LED\_PIN,
+
+            LED\_FREQ\_HZ,
+
+            LED\_DMA,
+
+            LED\_INVERT,
+
+            LED\_BRIGHTNESS
+
+            )
+
+
+
+# initialiser le ruban de LED
+
+ruban.begin()
+
+
+
+# préparer une LED, choisir la couleur
+
+ruban.setPixelColor(0, Color(255, 0, 0))
+
+# allumer la LED sur le ruban
+
+ruban.show()
+
+
+
+# ajouter un délai pour voir le ruban s'afficher
+
+time.sleep(10) # attendre 10 secondes
+
+# avant la fin de l'application
+
+----------------------
+
+
+
+Exemple de **matrice**: exemple\_matrice.py
+
+---------------
+
+from vrtneopixel import *
+
+import time
+
+# from neopixel import *
+
+
+
+# variables pour configurer le ruban de LED
+
+LED\_COUNT   = **(8,8)**
+
+LED\_PIN     = 18 # Broche ou GPIO
+
+LED\_FREQ\_HZ = 800000 # 800KHz
+
+LED\_DMA     = 5
+
+LED\_BRIGHTNESS = 255
+
+LED\_INVERT  = False
+
+
+
+# créer l'objet ruban,
+
+# une instance de la classe neopixel
+
+ruban = Adafruit\_NeoPixel(
+
+            LED\_COUNT,
+
+            LED\_PIN,
+
+            LED\_FREQ\_HZ,
+
+            LED\_DMA,
+
+            LED\_INVERT,
+
+            LED\_BRIGHTNESS
+
+            )
+
+
+
+# initialiser le ruban de LED
+
+ruban.begin()
+
+
+
+# préparer une LED, choisir la couleur
+
+ruban.setPixelColor(0, Color(255, 0, 0))
+
+ruban.setPixelColor(8, Color(255, 0, 0))
+
+ruban.setPixelColor(16, Color(255, 0, 0))
+
+ruban.setPixelColor(24, Color(255, 0, 0))
+
+ruban.setPixelColor(32, Color(255, 0, 0))
+
+ruban.setPixelColor(40, Color(255, 0, 0))
+
+ruban.setPixelColor(48, Color(255, 0, 0))
+
+ruban.setPixelColor(56, Color(255, 0, 0))
+
+# allumer la LED sur le ruban
+
+ruban.show()
+
+
+
+# ajouter un délai pour voir le ruban s'afficher
+
+time.sleep(10) # attendre 10 secondes
+
+# avant la fin de l'application
+
+--------------------
+
+
+
+Exemple, fichier: rainbow.py
+
+----------------------
+
+from vrtneopixel import *
+
+import time
+
+# from neopixel import *
+
+
+
+# variables pour configurer le ruban de LED
+
+LED\_COUNT   = (20,20)
+
+LED\_PIN     = 18 # Broche ou GPIO
+
+LED\_FREQ\_HZ = 800000 # 800KHz
+
+LED\_DMA     = 5
+
+LED\_BRIGHTNESS = 255
+
+LED\_INVERT  = False
+
+
+
+# créer l'objet ruban,
+
+# une instance de la classe neopixel
+
+ruban = Adafruit\_NeoPixel(
+
+            LED\_COUNT,
+
+            LED\_PIN,
+
+            LED\_FREQ\_HZ,
+
+            LED\_DMA,
+
+            LED\_INVERT,
+
+            LED\_BRIGHTNESS
+
+            )
+
+
+
+# initialiser le ruban de LED
+
+ruban.begin()
+
+
+
+def wheel(pos):
+
+    """Generate rainbow colors across 0-255 positions."""
+
+    if pos < 85:
+
+        return Color(pos * 3, 255 - pos * 3, 0)
+
+    elif pos < 170:
+
+        pos -= 85
+
+        return Color(255 - pos * 3, 0, pos * 3)
+
+    else:
+
+        pos -= 170
+
+        return Color(0, pos * 3, 255 - pos * 3)
+
+
+
+# préparer une LED, choisir la couleur
+
+iterations = 5
+
+wait\_ms = 20
+
+for j in range(256*iterations):
+
+    for i in range(ruban.numPixels()):
+
+        ruban.setPixelColor(i, wheel((int(i * 256 / ruban.numPixels()) + j) \& 255))
+
+    ruban.show()
+
+    time.sleep(wait\_ms/1000.0)
+
+
+
+# ajouter un délai pour voir le ruban s'afficher
+
+time.sleep(10) # attendre 10 secondes
+
+# avant la fin de l'application
+
+---------------------
+
+
+
+Références:
+
+   * [https://github.com/Hackable-magazine/vrtneopixel](https://github.com/Hackable-magazine/vrtneopixel)
+   * [https://learn.adafruit.com/neopixels-on-raspberry-pi/python-usage](https://learn.adafruit.com/neopixels-on-raspberry-pi/python-usage)
+   * [https://github.com/Aircoookie/WLED](https://github.com/Aircoookie/WLED) ## piloter les rubans de LED
+
+
+
+
+## Samedi 17 avril (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+   * Exemples tkgpio
+   * Initiation HTML/CSS/Javascript
+
+
+Gestion de boutons er de LEDs:
+
+fichier **boutonled.py**
+
+
+
+--------------------------
+
+    from tkgpio import TkCircuit
+
+    
+
+    # configuration du bouton led
+
+    
+
+    configuration = {
+
+        "width": 640,
+
+        "height": 480,
+
+        "leds": [
+
+            {"x": 50, "y": 40, "name": "LED 1", "pin": 21},
+
+            {"x": 100, "y": 40, "name": "LED 2", "pin": 22},
+
+            {"x": 150, "y": 40, "name": "LED 3", "pin": 23}
+
+        ],
+
+        "buttons": [
+
+            {"x": 50, "y": 130, "name": "Press to toggle LED 1", "pin": 11},
+
+            {"x": 50, "y": 180, "name": "Press to toggle LED 2", "pin": 12},
+
+            {"x": 50, "y": 230, "name": "Press to toggle LED 3", "pin": 13},
+
+        ]
+
+    }
+
+    
+
+    # boucle principale
+
+    circuit = TkCircuit(configuration)
+
+    @circuit.run
+
+    def main():
+
+        from gpiozero import LED,Button
+
+        from time import sleep
+
+        # déclaration des LEDs
+
+        led1 = LED(21)
+
+        led2 = LED(22)
+
+        led3 = LED(23)
+
+    
+
+        led1.off()
+
+        led2.off()
+
+        led3.off()
+
+     
+
+        button1 = Button(11)
+
+        button2 = Button(12)
+
+        button3 = Button(13)
+
+
+
+       # on va attendre jusqu'à ce que le bouton numéro 1 soit appuyé
+
+        print("appuyer sur le bouton numéro 1")
+
+        button1.wait\_for\_press()
+
+        print("j'ai appuyé sur le bouton numéro 1")
+
+    
+
+        button2.when\_pressed = led2.toggle
+
+
+
+        # trouver un cas d'utilisation
+
+        button3.when\_released = led3.toggle
+
+
+
+    #    button1.when\_pressed = led1.toggle
+
+    #    button2.when\_pressed = buzzer.on
+
+    #    button2.when\_released = buzzer.off
+
+    #    button3.when\_pressed = show\_sensor\_values
+
+    
+
+        while True:
+
+   *      led1.on()
+            sleep(1)
+
+            led1.off()
+
+            sleep(1)
+
+--------------------------
+
+
+
+Page Web:
+
+   * [https://fr.wikipedia.org/wiki/Document\_Object\_Model](https://fr.wikipedia.org/wiki/Document\_Object\_Model)
+   * [https://www.w3.org/TR/DOM-Level-3-Core/introduction.html](https://www.w3.org/TR/DOM-Level-3-Core/introduction.html)
+
+
+
+
+## Samedi 10 avril (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+   * Exemples tkgpio
+
+
+Exemple avec le capteur de mouvement
+
+
+
+Fichier **mouvement.py**
+
+--------------------------------
+
+from tkgpio import TkCircuit
+
+
+
+# configuration du capteur de mouvement et de l'écran
+
+
+
+configuration = {
+
+    "width": 640,
+
+    "height": 480,
+
+    "motion\_sensors": [
+
+        {"x": 150, "y": 170, "name": "Motion Sensor", "pin": 27, "detection\_radius": 50, "delay\_duration": 5, "block\_duration": 3 }
+
+    ],
+
+    "lcds": [
+
+        {"x": 30, "y": 40, "name": "LCD", "pins":[2, 3, 4, 5, 6, 7], "columns": 16, "lines": 2}
+
+    ],
+
+}
+
+
+
+# boucle principale
+
+circuit = TkCircuit(configuration)
+
+@circuit.run
+
+def main():
+
+    from Adafruit\_CharLCD import Adafruit\_CharLCD
+
+    from gpiozero import MotionSensor
+
+    from time import sleep
+
+
+
+    lcd = Adafruit\_CharLCD(2, 3, 4, 5, 6, 7, 16, 2)
+
+
+
+    def affiche\_mouvement():
+
+        lcd.clear()
+
+        lcd.message(
+
+            "Mouvement\ndetecte"
+
+        )
+
+
+
+    motion\_sensor = MotionSensor(27)
+
+    motion\_sensor.when\_motion = affiche\_mouvement
+
+    motion\_sensor.when\_no\_motion = lcd.clear
+
+
+
+    while True:
+
+        sleep(0.2)
+
+
+
+--------------------------------
+
+
+
+
+
+## Samedi 3 avril (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+   * tkgpio
+
+
+Mise à jour de la Raspberry Pi OS:
+
+$ sudo apt update
+
+$ sudo apt upgrade
+
+
+
+Création d'un nouveau circuit avec tkgpio
+
+
+
+**Fichier vumetre.py**
+
+------------------------------
+
+from tkgpio import TkCircuit
+
+
+
+# configuration du vu-mètre
+
+
+
+configuration = {
+
+    "width": 640,
+
+    "height": 480,
+
+    "leds": [
+
+        {"x": 50, "y": 40, "name": "LED 1", "pin": 21},
+
+        {"x": 100, "y": 40, "name": "LED 2", "pin": 22},
+
+        {"x": 150, "y": 40, "name": "LED 3", "pin": 23},
+
+        {"x": 200, "y": 40, "name": "LED 4", "pin": 24},
+
+        {"x": 250, "y": 40, "name": "LED 5", "pin": 25},
+
+        {"x": 300, "y": 40, "name": "LED 6", "pin": 26}
+
+    ],
+
+    "distance\_sensors": [
+
+        {"x": 30, "y": 430, "name": "Distance Sensor (cm)", "trigger\_pin": 17, "echo\_pin": 18, "min\_distance": 0, "max\_distance": 30}
+
+    ],
+
+    "buttons": [
+
+        {"x": 50, "y": 130, "name": "Press to toggle LED 2", "pin": 11},
+
+    ]
+
+}
+
+
+
+# boucle principale
+
+circuit = TkCircuit(configuration)
+
+@circuit.run
+
+def main():
+
+    from gpiozero import LED, PWMLED, Button, DistanceSensor
+
+    from time import sleep
+
+    # déclaration des LEDs
+
+    led1 = LED(21)
+
+    led2 = LED(22)
+
+    led3 = LED(23)
+
+    led4 = LED(24)
+
+    led5 = LED(25)
+
+    led6 = LED(26)
+
+
+
+    led1.off()
+
+    led2.off()
+
+    led3.off()
+
+    led4.off()
+
+    led5.off()
+
+    led6.off()
+
+ 
+
+    # création de l'instance du capteur ultrason
+
+    sensor = DistanceSensor(echo=18, trigger=17) 
+
+    while True:
+
+        # distance entre 0, 30 (valeur de retour entre 0.01 et 0.31)
+
+        ## print('Distance: ', sensor.distance * 100)
+
+        vuled = sensor.distance * 100
+
+        ## reset LED, toutes les LEDs off
+
+        # resetLEDs()
+
+        # affichage du vu-mètre
+
+        if vuled < 5:
+
+            led1.on()
+
+            led2.off()
+
+            led3.off()
+
+            led4.off()
+
+            led5.off()
+
+            led6.off()            
+
+        elif vuled < 10:
+
+            led1.on()
+
+            led2.on()
+
+            led3.off()
+
+            led4.off()
+
+            led5.off()
+
+            led6.off()
+
+        elif vuled < 15:
+
+            led1.on()
+
+            led2.on()
+
+            led3.on()
+
+            led4.off()
+
+            led5.off()
+
+            led6.off()
+
+        elif vuled < 20:
+
+            led1.on()
+
+            led2.on()
+
+            led3.on()
+
+            led4.on()
+
+            led5.off()
+
+            led6.off()
+
+        elif vuled < 25:
+
+            led1.on()
+
+            led2.on()
+
+            led3.on()
+
+            led4.on()
+
+            led5.on()
+
+            led6.off()
+
+        elif vuled < 30:
+
+            led1.on()
+
+            led2.on()
+
+            led3.on()
+
+            led4.on()
+
+            led5.on()
+
+            led6.on()
+
+
+
+        sleep(0.2)
+
+
+
+------------------------------
+
+
+
+**Charger une page locale HTML dans le navigateur Web:**
+
+$ **chromium-browser** exemple.html
+
+
+
+Et on peut charger une page locale HTML dans le navigateur en appuyant **Control + O.**
+
+Ouvre un explorateur du système de fichier et on choisit son fichier HTML à ouvrir.
+
+
+
+
+
+## Samedi 27 mars (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+   * tkgpio
+
+
+Exemples de callback
+
+
+
+exemple\_rappel.py
+
+
+
+-----------------------
+
+# led1.toggle
+
+def bonjour():
+
+    print("bonjour")
+
+
+
+# bouton when\_pressed
+
+def methode\_callback(methode\_a\_appeler):
+
+    methode\_a\_appeler()
+
+
+
+# button.when\_pressed = led1.toggle
+
+methode\_callback(bonjour)
+
+-----------------------
+
+
+
+$ python3 exemple\_rappel.py
+
+
+
+
+
+Exemple méthode de callback avec Tk:
+
+exemple\_rappel\_tk.py
+
+---------------------------
+
+from tkinter import *
+
+
+
+root = Tk()
+
+
+
+def bonjour(): # notre callback
+
+    print("Bonjour !")
+
+
+
+b = Button(root, text="Bonjour", command=bonjour)
+
+b.pack()
+
+
+
+root.mainloop() ## boucle d'interaction avec l'utilisateur
+
+---------------------------
+
+
+
+$ python3 exemple\_rappel\_tk.py
+
+
+
+Exemple de Tk, position dans la fenêtre et utilisation de pack
+
+---------------------
+
+from tkinter import *
+
+
+
+root = Tk()
+
+frame = Frame(root)
+
+frame.pack()
+
+
+
+bottomframe = Frame(root)
+
+bottomframe.pack( side = BOTTOM )
+
+
+
+redbutton = Button(frame, text="Red", fg="red")
+
+redbutton.pack( side = LEFT)
+
+
+
+greenbutton = Button(frame, text="green", fg="green")
+
+greenbutton.pack( side = LEFT )
+
+
+
+bluebutton = Button(frame, text="Blue", fg="blue")
+
+bluebutton.pack( side = LEFT )
+
+
+
+blackbutton = Button(bottomframe, text="Black", fg="black")
+
+blackbutton.pack( side = BOTTOM)
+
+
+
+root.mainloop()
+
+---------------------
+
+
+
+
+
+Page HTML et CSS
+
+
+
+-------------------------
+
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+
+        <title>Ma Page Web</title>
+
+        <!-- CSS dans un ficher extérieur -->
+
+        <!-- link rel="stylesheet" href="style.css" / -->
+
+        <!-- CSS dans l'entête -->
+
+        <style>
+
+            h1
+
+            {
+
+                color: blue;
+
+            }
+
+            p 
+
+            {
+
+                color:blueviolet;
+
+            }
+
+            .important
+
+            {
+
+                color: red;
+
+                font-size: 40;
+
+            }
+
+            p.important
+
+            {
+
+                color: rgb(0, 255, 34);
+
+                font-size: 40;
+
+                background-color: salmon;
+
+            }
+
+
+
+            #monparagraphe
+
+            {
+
+                color: yellow;
+
+                background-color: black;
+
+                left: 30px;
+
+            }
+
+        </style>        
+
+    </head>
+
+    <body>
+
+        <!-- CSS dans la balise -->
+
+        <h1 style="border: 5cm;">Gros titre</h1>
+
+        <h6>petit titre</h6>
+
+        <h1 style="color: red;">Gros deuxième titre</h1>
+
+        <h1 class="important">Gros deuxième titre</h1>
+
+
+
+        <p>Bonjour ! une Phrase avec un retour à la ligne</p>
+
+        <p class="important">Bonjour ! une Phrase avec un retour à la ligne</p>
+
+        <p id="monparagraphe">Bonjour ! une Phrase avec un retour à la ligne</p>
+
+        
+
+        ééàçè$€
+
+        ☺️ 😊 😇 🙂 🙃 😉 😌 😍 🥰 😘 😗 😙 😚 😋 😛 😝 😜 🤪 🤨 🧐 🤓 😎
+
+    </body>
+
+</html>
+
+---------------------------------
+
+
+
+Références:
+
+   * [https://fr.wikipedia.org/wiki/Fonction\_de\_rappel](https://fr.wikipedia.org/wiki/Fonction\_de\_rappel)
+   * [https://developer.mozilla.org/fr/docs/Web/CSS](https://developer.mozilla.org/fr/docs/Web/CSS)
+
+
+
+
+
+
+## Samedi 20 mars (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+   * tkgpio
+
+
+Fin de l'installation:
+
+
+
+Mise à jour de Pillow:
+
+$ pip3 install Pillow --upgrade
+
+
+
+**Installation de lib audio et blas (numpy):**
+
+    sudo apt install libportaudio2 libasound-dev libatlas-base-dev 
+
+    
+
+Démarrage de l'exemple:
+
+$ python3 test\_exemple.py
+
+
+
+Installation de **tree** pour afficher la liste des fichiers d'une arborescence:
+
+$ sudo apt install tree
+
+
+
+**Test de big circuit:**
+
+Le fichier big\_circuit se trouve dans les exemples:
+
+$ cd travail/sources/**tkgpio**
+
+
+
+$ cd docs/examples/big\_circuit
+
+$ python3 big\_circuit.py
+
+
+
+Expression 'paInvalidSampleRate' failed in 'src/hostapi/alsa/pa\_linux\_alsa.c', line: 2048
+
+Expression 'PaAlsaStreamComponent\_InitialConfigure( \&self->playback, outParams, self->primeBuffers, hwParamsPlayback, \&realSr )' failed in 'src/hostapi/alsa/pa\_linux\_alsa.c', line: 2722
+
+Expression 'PaAlsaStream\_Configure( stream, inputParameters, outputParameters, sampleRate, framesPerBuffer, \&inputLatency, \&outputLatency, \&hostBufferSizeMode )' failed in 'src/hostapi/alsa/pa\_linux\_alsa.c', line: 2843
+
+Exception in Tkinter callback
+
+Traceback (most recent call last):
+
+  File "/usr/lib/python3.7/tkinter/\_\_init\_\_.py", line 1705, in \_\_call\_\_
+
+    return self.func(*args)
+
+  File "/usr/lib/python3.7/tkinter/\_\_init\_\_.py", line 749, in callit
+
+    func(*args)
+
+  File "/home/pi/.local/lib/python3.7/site-packages/tkgpio/tkgpio.py", line 83, in \_update\_outputs
+
+    output.update()
+
+  File "/home/pi/.local/lib/python3.7/site-packages/tkgpio/tkgpio.py", line 193, in update
+
+    play(self.\_sample\_wave, self.SAMPLE\_RATE, loop=True)
+
+  File "/home/pi/.local/lib/python3.7/site-packages/sounddevice.py", line 177, in play
+
+    **kwargs)
+
+  File "/home/pi/.local/lib/python3.7/site-packages/sounddevice.py", line 2578, in start\_stream
+
+    **kwargs)
+
+  File "/home/pi/.local/lib/python3.7/site-packages/sounddevice.py", line 1489, in \_\_init\_\_
+
+    **\_remove\_self(locals()))
+
+  File "/home/pi/.local/lib/python3.7/site-packages/sounddevice.py", line 895, in \_\_init\_\_
+
+    'Error opening {}'.format(self.\_\_class\_\_.\_\_name\_\_))
+
+  File "/home/pi/.local/lib/python3.7/site-packages/sounddevice.py", line 2738, in \_check
+
+    raise PortAudioError(errormsg, err)
+
+sounddevice.PortAudioError: Error opening OutputStream: Invalid sample rate [PaErrorCode -9997]
+
+pi@raspberrypi:~/travail/sources/tkgpio/docs/examples/big\_circuit $ python3 big\_circuit.py
+
+
+
+Configuration du son:
+
+[https://www.raspberrypi.org/documentation/configuration/audio-config.md](https://www.raspberrypi.org/documentation/configuration/audio-config.md)
+
+
+
+Clé USB pour récupérer la domotique (statio météo, 433, 866...)
+
+
+
+
+
+
+
+## Samedi 13 mars (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python
+   * tkgpio
+
+
+
+
+Installation de tkgpio:
+
+Cloner le dépôt:
+
+$ git clone [https://github.com/wallysalami/tkgpio.git](https://github.com/wallysalami/tkgpio.git)
+
+$ cd tkgpio
+
+
+
+Installation 
+
+$ pip3 install .
+
+
+
+Mise à jour de numpy:
+
+$  pip3 install numpy --upgrade
+
+
+
+Code pour tester (fichier **test\_exemple.py**):
+
+-----------------------------
+
+    from tkgpio import TkCircuit
+
+    # initialize the circuit inside the 
+
+    configuration = {
+
+        "width": 300,
+
+        "height": 200,
+
+        "leds": [
+
+            {"x": 50, "y": 40, "name": "LED 1", "pin": 21},
+
+            {"x": 100, "y": 40, "name": "LED 2", "pin": 22}
+
+        ],
+
+        "buttons": [
+
+            {"x": 50, "y": 130, "name": "Press to toggle LED 2", "pin": 11},
+
+        ]
+
+    }
+
+    circuit = TkCircuit(configuration)@circuit.rundef main ():
+
+        
+
+        # now just write the code you would use on a real Raspberry Pi
+
+        
+
+        from gpiozero import LED, Button
+
+        from time import sleep
+
+        
+
+        led1 = LED(21)
+
+        led1.blink()
+
+        
+
+        def button\_pressed():
+
+            print("button pressed!")
+
+            led2.toggle()
+
+        
+
+        led2 = LED(22)
+
+        button = Button(11)
+
+        button.when\_pressed = button\_pressed
+
+        
+
+        while True:
+
+            sleep(0.1)
+
+-----------------------------
+
+
+
+Mise à jour de Pillow:
+
+$ pip3 install Pillow --upgrade
+
+
+
+Installation de lib audio et blas (numpy):
+
+    sudo apt install libportaudio2 libasound-dev libatlas-base-dev 
+
+    
+
+Démarrage de l'exemple:
+
+$ python3 test\_exemple.py
+
+
+
+
+
+
+
+## Samedi 20 février (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python/Pygame (suite et fin)
+
+
+Victoire sur les aliens
+
+------
+
+    import pygame
+
+    
+
+    class Alien:
+
+    
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen,
+
+                (80, 40, 90),
+
+                pygame.Rect(self.x, self.y, 30, 30))
+
+            self.y = self.y + 0.05
+
+    
+
+    # fin de classe Alien
+
+    
+
+    # class de rocket
+
+    class Rocket:
+
+    
+
+        #  initialisation de l'instance
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        # dessiner sur l'écran
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen, 
+
+                    (254, 52, 110),
+
+                    pygame.Rect(self.x, self.y, 2, 4))
+
+            self.y = self.y - 2
+
+        # fin de la fonction
+
+    # fin de la classe Rocket
+
+    
+
+    # dessiner vaisseau
+
+    def dessiner\_vaisseau(screen\_vaisseau, vaisseau\_x,vaisseau\_y):
+
+        pygame.draw.rect(screen\_vaisseau,
+
+            (210, 250, 251),
+
+            pygame.Rect(vaisseau\_x, vaisseau\_y, 8,5))
+
+    ## fin de la méthode dessiner vaisseau
+
+    
+
+    # afficher du texte sur l'ecran
+
+    def afficherEcran(screen, message):
+
+        pygame.font.init()
+
+        font = pygame.font.SysFont('Arial', 50)
+
+        textsurface = font.render(message, False, (44, 0, 62))
+
+        screen.blit(textsurface, (110, 160))
+
+    # fin de la méthode
+
+    
+
+    screen = None
+
+    # tableau d'aliens, à partir de la classe Alien
+
+    aliens = []
+
+    rockets = []
+
+    nouveau\_rockets = []
+
+    
+
+    pygame.init()
+
+    width = 640
+
+    height = 480
+
+    BLACK = (0,0,0)
+
+    
+
+    space\_x = width / 2 # milieu de l'écran
+
+    space\_y = height - 20 # bas de l'écran
+
+    
+
+    screen = pygame.display.set\_mode((width, height))
+
+    # un objet Clock: horloge pour compter les FPS
+
+    clock = pygame.time.Clock()
+
+    
+
+    done = False # True=1, False=0
+
+    
+
+    espace\_x\_entre\_alien = 10
+
+    # générer les aliens
+
+    for colonne in range(15): # for i = 0 , i < 15 , i++
+
+        for ligne in range(4):
+
+            #  x, y
+
+            aliens.append(Alien(screen, (colonne*40) + 30, (ligne *40) + 30))
+
+        # fin de ligne
+
+    # fin de colonne
+
+    # monAlien1 = Alien(screen, 30, 30)
+
+    # monAlien3 = Alien(screen, 30+30+10, 30)
+
+    # monAlien4 = Alien(screen, 110, 30)
+
+    # monAlien2 = Alien(screen, 100, 100)
+
+    
+
+    # boucle principale
+
+    while not done:
+
+        # vérifier si il reste encore des aliens
+
+        if len(aliens) == 0:
+
+            # le tableau des aliens est vide
+
+            afficherEcran(screen, "Victoire sur les aliens")
+
+        # copie de tableau
+
+        rockets = nouveau\_rockets
+
+        nouveau\_rockets = []
+
+        # action sur une touche
+
+        pressed = pygame.key.get\_pressed()
+
+        if pressed[pygame.K\_LEFT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x >= 20:
+
+                # diminuer space\_x de 2 pour aller vers la gauche
+
+                space\_x = space\_x - 2
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        if pressed[pygame.K\_RIGHT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x <= (width - 20):
+
+                # augmenter space\_x de 2 pour aller vers la droite
+
+                space\_x = space\_x + 2
+
+                
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        # boucle pour traiter tous les événements
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+
+                done = True
+
+            # quand la touche ESPACE est appuyée, tir de rocket
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K\_SPACE:
+
+                rockets.append(Rocket(screen, space\_x, space\_y))
+
+        # gestion de mon animation
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+        # couleur (R:0-255 => 2^8, G:0-255, B:0-255)
+
+        screen.fill(BLACK)
+
+        # dessiner les aliens
+
+        for chaqueAlien in aliens:
+
+            # re-dessiner un alien
+
+            chaqueAlien.draw()
+
+            # vérification de collision avec les rockets
+
+            for chaqueRocket in rockets:
+
+                if (chaqueRocket.x < chaqueAlien.x + 30 and
+
+                    chaqueRocket.x > chaqueAlien.x and
+
+                    chaqueRocket.y < chaqueAlien.y + 30 and 
+
+                    chaqueRocket.y > chaqueAlien.y - 30):
+
+                    # enter en collision
+
+                    # enlever l'alien
+
+                    aliens.remove(chaqueAlien)
+
+                    # enlever la rocket
+
+                    rockets.remove(chaqueRocket)
+
+            # vérifier qu'un Alien est arrivé au niveau du vaisseau
+
+            if chaqueAlien.y > space\_y:
+
+                afficherEcran(screen, "Game Over!")
+
+    
+
+        # monAlien1.draw() # Alien.draw(monAlien1)
+
+        # monAlien2.draw()
+
+        # monAlien3.draw()
+
+        # monAlien4.draw()
+
+        ## dessiner le vaisseau
+
+        dessiner\_vaisseau(screen, space\_x, space\_y)
+
+        for chaqueRocket in rockets:
+
+            chaqueRocket.draw()
+
+            if chaqueRocket.y >= 0:
+
+                nouveau\_rockets.append(chaqueRocket)
+
+            # rocket est en dehors de l'écran
+
+            # enlever la rocket du tableau
+
+    
+
+    # fin de la boucle
+
+    # sortie
+
+------
+
+
+
+
+
+**Méthode d'affichage centrée:**
+
+----------
+
+    # afficher du texte sur l'ecran
+
+    def afficherEcran(screen, message):
+
+        pygame.font.init()
+
+        font = pygame.font.SysFont('Arial', 60)
+
+        textsurface = font.render(message, False, (44, 0, 62))
+
+        text\_rect = textsurface.get\_rect(center=(640/2, 480/2))
+
+        screen.blit(textsurface, text\_rect)
+
+    # fin de la méthode
+
+---------------------
+
+ 
+
+ 
+
+**Gestion de la fin du jeu:**
+
+-----------
+
+    import pygame
+
+    
+
+    class Alien:
+
+    
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen,
+
+                (80, 40, 90),
+
+                pygame.Rect(self.x, self.y, 30, 30))
+
+            self.y = self.y + 0.20
+
+    
+
+    # fin de classe Alien
+
+    
+
+    # class de rocket
+
+    class Rocket:
+
+    
+
+        #  initialisation de l'instance
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        # dessiner sur l'écran
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen, 
+
+                    (254, 52, 110),
+
+                    pygame.Rect(self.x, self.y, 2, 4))
+
+            self.y = self.y - 2
+
+        # fin de la fonction
+
+    # fin de la classe Rocket
+
+    
+
+    # dessiner vaisseau
+
+    def dessiner\_vaisseau(screen\_vaisseau, vaisseau\_x,vaisseau\_y):
+
+        pygame.draw.rect(screen\_vaisseau,
+
+            (210, 250, 251),
+
+            pygame.Rect(vaisseau\_x, vaisseau\_y, 8,5))
+
+    ## fin de la méthode dessiner vaisseau
+
+    
+
+    # afficher du texte sur l'ecran
+
+    def afficherEcran(screen, message):
+
+        pygame.font.init()
+
+        font = pygame.font.SysFont('Arial', 60)
+
+        textsurface = font.render(message, False, (44, 0, 62))
+
+        text\_rect = textsurface.get\_rect(center=(640/2, 480/2))
+
+        screen.blit(textsurface, text\_rect)
+
+    # fin de la méthode
+
+    
+
+    screen = None
+
+    # tableau d'aliens, à partir de la classe Alien
+
+    aliens = []
+
+    rockets = []
+
+    nouveau\_rockets = []
+
+    
+
+    pygame.init()
+
+    width = 640
+
+    height = 480
+
+    BLACK = (0,0,0)
+
+    
+
+    space\_x = width / 2 # milieu de l'écran
+
+    space\_y = height - 20 # bas de l'écran
+
+    
+
+    screen = pygame.display.set\_mode((width, height))
+
+    # un objet Clock: horloge pour compter les FPS
+
+    clock = pygame.time.Clock()
+
+    
+
+    done = False # True=1, False=0
+
+    # game over, figer le jeu
+
+    perdu = False
+
+    
+
+    espace\_x\_entre\_alien = 10
+
+    # générer les aliens
+
+    for colonne in range(15): # for i = 0 , i < 15 , i++
+
+        for ligne in range(4):
+
+            #  x, y
+
+            aliens.append(Alien(screen, (colonne*40) + 30, (ligne *40) + 30))
+
+        # fin de ligne
+
+    # fin de colonne
+
+    # monAlien1 = Alien(screen, 30, 30)
+
+    # monAlien3 = Alien(screen, 30+30+10, 30)
+
+    # monAlien4 = Alien(screen, 110, 30)
+
+    # monAlien2 = Alien(screen, 100, 100)
+
+    
+
+    # boucle principale
+
+    while not done:
+
+        # afficherEcran(screen, "Le jeu des aliens")
+
+        # vérifier si il reste encore des aliens
+
+        if len(aliens) == 0:
+
+            # le tableau des aliens est vide
+
+            afficherEcran(screen, "Victoire sur les aliens")
+
+        # copie de tableau
+
+        rockets = nouveau\_rockets
+
+        nouveau\_rockets = []
+
+        # action sur une touche
+
+        pressed = pygame.key.get\_pressed()
+
+        if pressed[pygame.K\_LEFT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x >= 20:
+
+                # diminuer space\_x de 2 pour aller vers la gauche
+
+                space\_x = space\_x - 2
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        if pressed[pygame.K\_RIGHT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x <= (width - 20):
+
+                # augmenter space\_x de 2 pour aller vers la droite
+
+                space\_x = space\_x + 2
+
+                
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        # boucle pour traiter tous les événements
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+
+                done = True
+
+            # quand la touche ESPACE est appuyée, tir de rocket
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K\_SPACE:
+
+                rockets.append(Rocket(screen, space\_x, space\_y))
+
+        # gestion de mon animation
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+        # couleur (R:0-255 => 2^8, G:0-255, B:0-255)
+
+        screen.fill(BLACK)
+
+        # dessiner les aliens
+
+        for chaqueAlien in aliens:
+
+            # re-dessiner un alien
+
+            chaqueAlien.draw()
+
+            # vérification de collision avec les rockets
+
+            for chaqueRocket in rockets:
+
+                if (chaqueRocket.x < chaqueAlien.x + 30 and
+
+                    chaqueRocket.x > chaqueAlien.x and
+
+                    chaqueRocket.y < chaqueAlien.y + 30 and 
+
+                    chaqueRocket.y > chaqueAlien.y - 30):
+
+                    # enter en collision
+
+                    # enlever l'alien
+
+                    aliens.remove(chaqueAlien)
+
+                    # enlever la rocket
+
+                    rockets.remove(chaqueRocket)
+
+            # vérifier qu'un Alien est arrivé au niveau du vaisseau
+
+            if (chaqueAlien.y + 30) > space\_y:
+
+                afficherEcran(screen, "Game Over!")
+
+                # j'ai perdu
+
+                perdu = True
+
+    
+
+        # monAlien1.draw() # Alien.draw(monAlien1)
+
+        # monAlien2.draw()
+
+        # monAlien3.draw()
+
+        # monAlien4.draw()
+
+        ## dessiner le vaisseau
+
+        if not perdu:
+
+            dessiner\_vaisseau(screen, space\_x, space\_y)
+
+            for chaqueRocket in rockets:
+
+                chaqueRocket.draw()
+
+                if chaqueRocket.y >= 0:
+
+                    nouveau\_rockets.append(chaqueRocket)
+
+            # rocket est en dehors de l'écran
+
+            # enlever la rocket du tableau
+
+    
+
+    # fin de la boucle
+
+    # sortie
+
+----------
+
+
+
+Références:
+
+   * [https://nasa.github.io/fprime/](https://nasa.github.io/fprime/)
+   * [https://opensourcerover.jpl.nasa.gov/](https://opensourcerover.jpl.nasa.gov/)
+   * [https://joshdata.me/iceberger.html](https://joshdata.me/iceberger.html)
+   * Jeux Excel: [https://www.excelstars.com/fr/juegos-excel/](https://www.excelstars.com/fr/juegos-excel/)
+   * VBA: [https://www.excel-pratique.com/fr/vba](https://www.excel-pratique.com/fr/vba)
+   * Gambas Basic: [http://gambas.sourceforge.net/en/main.html#](http://gambas.sourceforge.net/en/main.html#)
+   * FreeBasic: [https://www.freebasic.net/](https://www.freebasic.net/)
+
+
+
+
+## Samedi 13 février (visio)
+
+
+
+[https://books.google.fr/books?id=-zCtDwAAQBAJ\&pg=PR4\&lpg=PR4\&dq=Apprendre+%C3%A0+coder+des+jeux+vid%C3%A9o+en+Python+/+Al+Sweigart+;+traduction+fran%C3%A7aise,+Paul+Durand+Degranges\&source=bl\&ots=CJPlbSUalt\&sig=ACfU3U1Kzs4EZFQxGLNGJMJEPCBqqRrmwQ\&hl=fr\&sa=X\&ved=2ahUKEwjYntL0yMnuAhWtxIUKHUYODeg4ChDoATAIegQIDBAC#v=onepage\&q=Apprendre%20%C3%A0%20coder%20des%20jeux%20vid%C3%A9o%20en%20Python%20%2F%20Al%20Sweigart%20%3B%20traduction%20fran%C3%A7aise%2C%20Paul%20Durand%20Degranges\&f=false](https://books.google.fr/books?id=-zCtDwAAQBAJ\&pg=PR4\&lpg=PR4\&dq=Apprendre+%C3%A0+coder+des+jeux+vid%C3%A9o+en+Python+/+Al+Sweigart+;+traduction+fran%C3%A7aise,+Paul+Durand+Degranges\&source=bl\&ots=CJPlbSUalt\&sig=ACfU3U1Kzs4EZFQxGLNGJMJEPCBqqRrmwQ\&hl=fr\&sa=X\&ved=2ahUKEwjYntL0yMnuAhWtxIUKHUYODeg4ChDoATAIegQIDBAC#v=onepage\&q=Apprendre%20%C3%A0%20coder%20des%20jeux%20vid%C3%A9o%20en%20Python%20%2F%20Al%20Sweigart%20%3B%20traduction%20fran%C3%A7aise%2C%20Paul%20Durand%20Degranges\&f=false)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python/Pygame (suite)
+
+
+Mise en oeuvre du Débuggeur Python dans Visual Studio Code.
+
+
+
+Gestion des collisions
+
+------------
+
+    import pygame
+
+    
+
+    class Alien:
+
+    
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen,
+
+                (80, 40, 90),
+
+                pygame.Rect(self.x, self.y, 30, 30))
+
+            self.y = self.y + 0.05
+
+    
+
+    # fin de classe Alien
+
+    
+
+    # class de rocket
+
+    class Rocket:
+
+    
+
+        #  initialisation de l'instance
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        # dessiner sur l'écran
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen, 
+
+                    (254, 52, 110),
+
+                    pygame.Rect(self.x, self.y, 2, 4))
+
+            self.y = self.y - 2
+
+        # fin de la fonction
+
+    # fin de la classe Rocket
+
+    
+
+    # dessiner vaisseau
+
+    def dessiner\_vaisseau(screen\_vaisseau, vaisseau\_x,vaisseau\_y):
+
+        pygame.draw.rect(screen\_vaisseau,
+
+            (210, 250, 251),
+
+            pygame.Rect(vaisseau\_x, vaisseau\_y, 8,5))
+
+    ## fin de la méthode dessiner vaisseau
+
+    
+
+    screen = None
+
+    # tableau d'aliens, à partir de la classe Alien
+
+    aliens = []
+
+    rockets = []
+
+    nouveau\_rockets = []
+
+    
+
+    pygame.init()
+
+    width = 640
+
+    height = 480
+
+    BLACK = (0,0,0)
+
+    
+
+    space\_x = width / 2 # milieu de l'écran
+
+    space\_y = height - 20 # bas de l'écran
+
+    
+
+    screen = pygame.display.set\_mode((width, height))
+
+    # un objet Clock: horloge pour compter les FPS
+
+    clock = pygame.time.Clock()
+
+    
+
+    done = False # True=1, False=0
+
+    
+
+    espace\_x\_entre\_alien = 10
+
+    # générer les aliens
+
+    for colonne in range(15): # for i = 0 , i < 15 , i++
+
+        for ligne in range(4):
+
+            #  x, y
+
+            aliens.append(Alien(screen, (colonne*40) + 30, (ligne *40) + 30))
+
+        # fin de ligne
+
+    # fin de colonne
+
+    # monAlien1 = Alien(screen, 30, 30)
+
+    # monAlien3 = Alien(screen, 30+30+10, 30)
+
+    # monAlien4 = Alien(screen, 110, 30)
+
+    # monAlien2 = Alien(screen, 100, 100)
+
+    
+
+    # boucle principale
+
+    while not done:
+
+        # copie de tableau
+
+        rockets = nouveau\_rockets
+
+        nouveau\_rockets = []
+
+        # action sur une touche
+
+        pressed = pygame.key.get\_pressed()
+
+        if pressed[pygame.K\_LEFT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x >= 20:
+
+                # diminuer space\_x de 2 pour aller vers la gauche
+
+                space\_x = space\_x - 2
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        if pressed[pygame.K\_RIGHT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x <= (width - 20):
+
+                # augmenter space\_x de 2 pour aller vers la droite
+
+                space\_x = space\_x + 2
+
+                
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        # boucle pour traiter tous les événements
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+
+                done = True
+
+            # quand la touche ESPACE est appuyée, tir de rocket
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K\_SPACE:
+
+                rockets.append(Rocket(screen, space\_x, space\_y))
+
+        # gestion de mon animation
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+        # couleur (R:0-255 => 2^8, G:0-255, B:0-255)
+
+        screen.fill(BLACK)
+
+        # dessiner les aliens
+
+        for chaqueAlien in aliens:
+
+            # re-dessiner un alien
+
+            chaqueAlien.draw()
+
+            for chaqueRocket in rockets:
+
+                if (chaqueRocket.x < chaqueAlien.x + 30 and
+
+                    chaqueRocket.x > chaqueAlien.x and
+
+                    chaqueRocket.y < chaqueAlien.y + 30 and 
+
+                    chaqueRocket.y > chaqueAlien.y - 30):
+
+                    # enter en collision
+
+                    # enlever l'alien
+
+                    aliens.remove(chaqueAlien)
+
+                    # enlever la rocket
+
+                    rockets.remove(chaqueRocket)
+
+    
+
+        # monAlien1.draw() # Alien.draw(monAlien1)
+
+        # monAlien2.draw()
+
+        # monAlien3.draw()
+
+        # monAlien4.draw()
+
+        ## dessiner le vaisseau
+
+        dessiner\_vaisseau(screen, space\_x, space\_y)
+
+        for chaqueRocket in rockets:
+
+            chaqueRocket.draw()
+
+            if chaqueRocket.y >= 0:
+
+                nouveau\_rockets.append(chaqueRocket)
+
+            # rocket est en dehors de l'écran
+
+            # enlever la rocket du tableau
+
+    
+
+    # fin de la boucle
+
+    # sortie
+
+------------
+
+
+
+Liste des fontes installés sur la RPi:
+
+    fc-list
+
+
+
+--------------------
+
+    import pygame
+
+    
+
+    class Alien:
+
+    
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen,
+
+                (80, 40, 90),
+
+                pygame.Rect(self.x, self.y, 30, 30))
+
+            self.y = self.y + 0.05
+
+    
+
+    # fin de classe Alien
+
+    
+
+    # class de rocket
+
+    class Rocket:
+
+    
+
+        #  initialisation de l'instance
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        # dessiner sur l'écran
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen, 
+
+                    (254, 52, 110),
+
+                    pygame.Rect(self.x, self.y, 2, 4))
+
+            self.y = self.y - 2
+
+        # fin de la fonction
+
+    # fin de la classe Rocket
+
+    
+
+    # dessiner vaisseau
+
+    def dessiner\_vaisseau(screen\_vaisseau, vaisseau\_x,vaisseau\_y):
+
+        pygame.draw.rect(screen\_vaisseau,
+
+            (210, 250, 251),
+
+            pygame.Rect(vaisseau\_x, vaisseau\_y, 8,5))
+
+    ## fin de la méthode dessiner vaisseau
+
+    
+
+    # afficher du texte sur l'ecran
+
+    def afficherEcran(screen, message):
+
+        pygame.font.init()
+
+        font = pygame.font.SysFont('Arial', 50)
+
+        textsurface = font.render(message, False, (44, 0, 62))
+
+        screen.blit(textsurface, (110, 160))
+
+    # fin de la méthode
+
+    
+
+    screen = None
+
+    # tableau d'aliens, à partir de la classe Alien
+
+    aliens = []
+
+    rockets = []
+
+    nouveau\_rockets = []
+
+    
+
+    pygame.init()
+
+    width = 640
+
+    height = 480
+
+    BLACK = (0,0,0)
+
+    
+
+    space\_x = width / 2 # milieu de l'écran
+
+    space\_y = height - 20 # bas de l'écran
+
+    
+
+    screen = pygame.display.set\_mode((width, height))
+
+    # un objet Clock: horloge pour compter les FPS
+
+    clock = pygame.time.Clock()
+
+    
+
+    done = False # True=1, False=0
+
+    
+
+    espace\_x\_entre\_alien = 10
+
+    # générer les aliens
+
+    for colonne in range(15): # for i = 0 , i < 15 , i++
+
+        for ligne in range(4):
+
+            #  x, y
+
+            aliens.append(Alien(screen, (colonne*40) + 30, (ligne *40) + 30))
+
+        # fin de ligne
+
+    # fin de colonne
+
+    # monAlien1 = Alien(screen, 30, 30)
+
+    # monAlien3 = Alien(screen, 30+30+10, 30)
+
+    # monAlien4 = Alien(screen, 110, 30)
+
+    # monAlien2 = Alien(screen, 100, 100)
+
+    
+
+    # boucle principale
+
+    while not done:
+
+        # copie de tableau
+
+        rockets = nouveau\_rockets
+
+        nouveau\_rockets = []
+
+        # action sur une touche
+
+        pressed = pygame.key.get\_pressed()
+
+        if pressed[pygame.K\_LEFT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x >= 20:
+
+                # diminuer space\_x de 2 pour aller vers la gauche
+
+                space\_x = space\_x - 2
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        if pressed[pygame.K\_RIGHT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x <= (width - 20):
+
+                # augmenter space\_x de 2 pour aller vers la droite
+
+                space\_x = space\_x + 2
+
+                
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        # boucle pour traiter tous les événements
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+
+                done = True
+
+            # quand la touche ESPACE est appuyée, tir de rocket
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K\_SPACE:
+
+                rockets.append(Rocket(screen, space\_x, space\_y))
+
+        # gestion de mon animation
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+        # couleur (R:0-255 => 2^8, G:0-255, B:0-255)
+
+        screen.fill(BLACK)
+
+        # dessiner les aliens
+
+        for chaqueAlien in aliens:
+
+            # re-dessiner un alien
+
+            chaqueAlien.draw()
+
+            # vérification de collision avec les rockets
+
+            for chaqueRocket in rockets:
+
+                if (chaqueRocket.x < chaqueAlien.x + 30 and
+
+                    chaqueRocket.x > chaqueAlien.x and
+
+                    chaqueRocket.y < chaqueAlien.y + 30 and 
+
+                    chaqueRocket.y > chaqueAlien.y - 30):
+
+                    # enter en collision
+
+                    # enlever l'alien
+
+                    aliens.remove(chaqueAlien)
+
+                    # enlever la rocket
+
+                    rockets.remove(chaqueRocket)
+
+            # vérifier qu'un Alien est arrivé au niveau du vaisseau
+
+            if chaqueAlien.y > space\_y:
+
+                afficherEcran(screen, "Game Over!")
+
+    
+
+        # monAlien1.draw() # Alien.draw(monAlien1)
+
+        # monAlien2.draw()
+
+        # monAlien3.draw()
+
+        # monAlien4.draw()
+
+        ## dessiner le vaisseau
+
+        dessiner\_vaisseau(screen, space\_x, space\_y)
+
+        for chaqueRocket in rockets:
+
+            chaqueRocket.draw()
+
+            if chaqueRocket.y >= 0:
+
+                nouveau\_rockets.append(chaqueRocket)
+
+            # rocket est en dehors de l'écran
+
+            # enlever la rocket du tableau
+
+    
+
+    # fin de la boucle
+
+    # sortie
+
+--------------------
+
+Installation de la libSDL2 pour gérer les polices TTF:
+
+    $ sudo apt install libsdl2-ttf-2.0-0
+
+
+
+Références:
+
+   * [https://codes-sources.commentcamarche.net/source/list/python-19/340-jeux/last](https://codes-sources.commentcamarche.net/source/list/python-19/340-jeux/last)
+   * [https://python.doctor/page-syntaxe-differente-python2-python3-python-differences](https://python.doctor/page-syntaxe-differente-python2-python3-python-differences)
+   * [https://docs.python.org/fr/3/howto/pyporting.html](https://docs.python.org/fr/3/howto/pyporting.html)
+   * [http://doc.ubuntu-fr.org/testdisk](http://doc.ubuntu-fr.org/testdisk)
+   * [https://gparted.org/](https://gparted.org/)
+   * [https://www.tecmint.com/check-linux-hard-disk-bad-sectors-bad-blocks/](https://www.tecmint.com/check-linux-hard-disk-bad-sectors-bad-blocks/) ## SMART ctl
+   * [https://fr.flossmanuals.net/creer-des-jeux-en-python-avec-pygame/des-jeux-en-python/](https://fr.flossmanuals.net/creer-des-jeux-en-python-avec-pygame/des-jeux-en-python/)
+   * 
+
+
+
+## Samedi 6 février (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python/Pygame (suite)
+
+
+Lancer des rockets
+
+   * tirer les rockets
+   * ~~effacer~~ les rockets
+
+
+-------
+
+    import pygame
+
+    
+
+    class Alien:
+
+    
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen,
+
+                (80, 40, 90),
+
+                pygame.Rect(self.x, self.y, 30, 30))
+
+            self.y = self.y + 0.05
+
+    
+
+    # fin de classe Alien
+
+    
+
+    # class de rocket
+
+    class Rocket:
+
+    
+
+        #  initialisation de l'instance
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        # dessiner sur l'écran
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen, 
+
+                    (254, 52, 110),
+
+                    pygame.Rect(self.x, self.y, 2, 4))
+
+            self.y = self.y - 2
+
+        # fin de la fonction
+
+    # fin de la classe Rocket
+
+    
+
+    # dessiner vaisseau
+
+    def dessiner\_vaisseau(screen\_vaisseau, vaisseau\_x,vaisseau\_y):
+
+        pygame.draw.rect(screen\_vaisseau,
+
+            (210, 250, 251),
+
+            pygame.Rect(vaisseau\_x, vaisseau\_y, 8,5))
+
+    ## fin de la méthode dessiner vaisseau
+
+    
+
+    screen = None
+
+    # tableau d'aliens, à partir de la classe Alien
+
+    aliens = []
+
+    rockets = []
+
+    nouveau\_rockets = []
+
+    
+
+    pygame.init()
+
+    width = 640
+
+    height = 480
+
+    BLACK = (0,0,0)
+
+    
+
+    space\_x = width / 2 # milieu de l'écran
+
+    space\_y = height - 20 # bas de l'écran
+
+    
+
+    screen = pygame.display.set\_mode((width, height))
+
+    # un objet Clock: horloge pour compter les FPS
+
+    clock = pygame.time.Clock()
+
+    
+
+    done = False # True=1, False=0
+
+    
+
+    espace\_x\_entre\_alien = 10
+
+    # générer les aliens
+
+    for colonne in range(15): # for i = 0 , i < 15 , i++
+
+        for ligne in range(4):
+
+            #  x, y
+
+            aliens.append(Alien(screen, (colonne*40) + 30, (ligne *40) + 30))
+
+        # fin de ligne
+
+    # fin de colonne
+
+    # monAlien1 = Alien(screen, 30, 30)
+
+    # monAlien3 = Alien(screen, 30+30+10, 30)
+
+    # monAlien4 = Alien(screen, 110, 30)
+
+    # monAlien2 = Alien(screen, 100, 100)
+
+    
+
+    # boucle principale
+
+    while not done:
+
+        # copie de tableau
+
+        rockets = nouveau\_rockets
+
+        nouveau\_rockets = []
+
+        # action sur une touche
+
+        pressed = pygame.key.get\_pressed()
+
+        if pressed[pygame.K\_LEFT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x >= 20:
+
+                # diminuer space\_x de 2 pour aller vers la gauche
+
+                space\_x = space\_x - 2
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        if pressed[pygame.K\_RIGHT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x <= (width - 20):
+
+                # augmenter space\_x de 2 pour aller vers la droite
+
+                space\_x = space\_x + 2
+
+                
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        # boucle pour traiter tous les événements
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+
+                done = True
+
+            # quand la touche ESPACE est appuyée, tir de rocket
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K\_SPACE:
+
+                rockets.append(Rocket(screen, space\_x, space\_y))
+
+        # gestion de mon animation
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+        # couleur (R:0-255 => 2^8, G:0-255, B:0-255)
+
+        screen.fill(BLACK)
+
+        # dessiner les aliens
+
+        for chaqueAlien in aliens:
+
+            # re-dessiner un alien
+
+            chaqueAlien.draw()
+
+        # monAlien1.draw() # Alien.draw(monAlien1)
+
+        # monAlien2.draw()
+
+        # monAlien3.draw()
+
+        # monAlien4.draw()
+
+        ## dessiner le vaisseau
+
+        dessiner\_vaisseau(screen, space\_x, space\_y)
+
+        for chaqueRocket in rockets:
+
+            chaqueRocket.draw()
+
+            if chaqueRocket.y >= 0:
+
+                nouveau\_rockets.append(chaqueRocket)
+
+            # rocket est en dehors de l'écran
+
+            # enlever la rocket du tableau
+
+    
+
+    # fin de la boucle
+
+    # sortie
+
+------
+
+
+
+
+
+## Samedi 30 janvier (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Initiation Python/Pygame (suite)
+
+
+Dessiner le vaisseau spécial:
+
+------------
+
+    import pygame
+
+    
+
+    class Alien:
+
+    
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen,
+
+                (80, 40, 90),
+
+                pygame.Rect(self.x, self.y, 30, 30))
+
+            self.y = self.y + 0.05
+
+    
+
+    # fin de classe Alien
+
+    
+
+    # dessiner vaisseau
+
+    def dessiner\_vaisseau(screen\_vaisseau, vaisseau\_x,vaisseau\_y):
+
+        pygame.draw.rect(screen\_vaisseau,
+
+            (210, 250, 251),
+
+            pygame.Rect(vaisseau\_x, vaisseau\_y, 8,5))
+
+    ## fin de la méthode dessiner vaisseau
+
+    
+
+    screen = None
+
+    # tableau d'aliens, à partir de la classe Alien
+
+    aliens = []
+
+    
+
+    pygame.init()
+
+    width = 640
+
+    height = 480
+
+    BLACK = (0,0,0)
+
+    
+
+    space\_x = width / 2 # milieu de l'écran
+
+    space\_y = height - 20 # base de l'écran
+
+    
+
+    screen = pygame.display.set\_mode((width, height))
+
+    # un objet Clock: horloge pour compter les FPS
+
+    clock = pygame.time.Clock()
+
+    
+
+    done = False # True=1, False=0
+
+    
+
+    monAlien1 = Alien(screen, 30, 30)
+
+    monAlien2 = Alien(screen, 100, 100)
+
+    monAlien3 = Alien(screen, 30+30+10, 30)
+
+    monAlien4 = Alien(screen, 110, 30)
+
+    
+
+    # boucle principale
+
+    while not done:
+
+        # boucle pour traiter tous les événements
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+
+                done = True
+
+        # gestion de mon animation
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+        # couleur (R:0-255 => 2^8, G:0-255, B:0-255)
+
+        screen.fill(BLACK)
+
+        # dessiner
+
+        monAlien1.draw() # Alien.draw(monAlien1)
+
+        monAlien2.draw()
+
+        monAlien3.draw()
+
+        monAlien4.draw()
+
+        ## dessiner le vaisseau
+
+        dessiner\_vaisseau(screen, space\_x, space\_y)
+
+    
+
+    # fin de la boucle
+
+    # sortie
+
+-----------
+
+
+
+Bouger le vaisseau vers la droite et vers la gauche:
+
+-------------
+
+    import pygame
+
+    
+
+    class Alien:
+
+    
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen,
+
+                (80, 40, 90),
+
+                pygame.Rect(self.x, self.y, 30, 30))
+
+            self.y = self.y + 0.05
+
+    
+
+    # fin de classe Alien
+
+    
+
+    # dessiner vaisseau
+
+    def dessiner\_vaisseau(screen\_vaisseau, vaisseau\_x,vaisseau\_y):
+
+        pygame.draw.rect(screen\_vaisseau,
+
+            (210, 250, 251),
+
+            pygame.Rect(vaisseau\_x, vaisseau\_y, 8,5))
+
+    ## fin de la méthode dessiner vaisseau
+
+    
+
+    screen = None
+
+    # tableau d'aliens, à partir de la classe Alien
+
+    aliens = []
+
+    
+
+    pygame.init()
+
+    width = 640
+
+    height = 480
+
+    BLACK = (0,0,0)
+
+    
+
+    space\_x = width / 2 # milieu de l'écran
+
+    space\_y = height - 20 # bas de l'écran
+
+    
+
+    screen = pygame.display.set\_mode((width, height))
+
+    # un objet Clock: horloge pour compter les FPS
+
+    clock = pygame.time.Clock()
+
+    
+
+    done = False # True=1, False=0
+
+    
+
+    monAlien1 = Alien(screen, 30, 30)
+
+    monAlien2 = Alien(screen, 100, 100)
+
+    monAlien3 = Alien(screen, 30+30+10, 30)
+
+    monAlien4 = Alien(screen, 110, 30)
+
+    
+
+    # boucle principale
+
+    while not done:
+
+    
+
+        # action sur une touche
+
+        pressed = pygame.key.get\_pressed()
+
+        if pressed[pygame.K\_LEFT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x >= 20:
+
+                # diminuer space\_x de 2 pour aller vers la gauche
+
+                space\_x = space\_x - 2
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        if pressed[pygame.K\_RIGHT]:
+
+            # colonne Alien la plus à gauche 30, vaisseau >= 20
+
+            if space\_x <= (width - 20):
+
+                # augmenter space\_x de 2 pour aller vers la droite
+
+                space\_x = space\_x + 2
+
+            ## fin de if
+
+        ## fin de if pressed
+
+        # boucle pour traiter tous les événements
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+
+                done = True
+
+        # gestion de mon animation
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+        # couleur (R:0-255 => 2^8, G:0-255, B:0-255)
+
+        screen.fill(BLACK)
+
+        # dessiner
+
+        monAlien1.draw() # Alien.draw(monAlien1)
+
+        monAlien2.draw()
+
+        monAlien3.draw()
+
+        monAlien4.draw()
+
+        ## dessiner le vaisseau
+
+        dessiner\_vaisseau(screen, space\_x, space\_y)
+
+    
+
+    # fin de la boucle
+
+    # sortie
+
+------------
+
+
+
+Références:
+
+   * [https://code.visualstudio.com/](https://code.visualstudio.com/)
+   * [https://code.visualstudio.com/#alt-downloads](https://code.visualstudio.com/#alt-downloads)
+
+
+sudo apt install ./code\_1.52.1-1608136275\_armhf.deb 
+
+
+
+
+
+## Samedi 23 janvier (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Mise en oeuvre de mDNS: [https://en.wikipedia.org/wiki/Multicast\_DNS](https://en.wikipedia.org/wiki/Multicast\_DNS)
+   * Initiation Python (suite)
+
+
+Initiation Python:
+
+$ cd travail/sources
+
+$ mkdir jeu
+
+$ cd jeu
+
+$ python3 -m venv .venv
+
+$ source .venv/bin/activate
+
+(.venv) $ **pip install pygame**
+
+
+
+(.venv)  $ **python**
+
+Python 3.7.3 (default, Jul 25 2020, 13:03:44) 
+
+[GCC 8.3.0] on linux
+
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>> import pygame
+
+pygame 2.0.1 (SDL 2.0.9, Python 3.7.3)
+
+Hello from the pygame community. [https://www.pygame.org/contribute.html](https://www.pygame.org/contribute.html)
+
+>>> 
+
+$ code
+
+
+
+fichier space\_invaders.py:
+
+-------------------------
+
+    import pygame
+
+    
+
+    screen = None
+
+    aliens = []
+
+    
+
+    pygame.init()
+
+    width = 640
+
+    height = 480
+
+    BLACK = (0,0,0)
+
+    
+
+    screen = pygame.display.set\_mode((width, height))
+
+    # un objet Clock: horloge pour compter les FPS
+
+    clock = pygame.time.Clock()
+
+    
+
+    done = False # True=1, False=0
+
+    
+
+    # boucle principale
+
+    while not done:
+
+        # boucle pour traiter tous les événements
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+
+                done = True
+
+        # gestion de mon animation
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+        # couleur (R:0-255 => 2^8, G:0-255, B:0-255)
+
+        screen.fill(BLACK)
+
+    # fin de la boucle
+
+    # sortie
+
+-------------------------
+
+
+
+
+
+Avec la classe Alien:
+
+
+
+-------------------    
+
+    import pygame
+
+    
+
+    class Alien:
+
+        def \_\_init\_\_(self, screen, x, y):
+
+            self.x = x
+
+            self.y = y
+
+            self.screen = screen
+
+    
+
+        def draw(self):
+
+            pygame.draw.rect(self.screen,
+
+                (80, 40, 90),
+
+                pygame.Rect(self.x, self.y, 30, 30))
+
+            self.y = self.y + 0.05
+
+    
+
+    # fin de classe Alien
+
+    
+
+    screen = None
+
+    # tableau d'aliens, à partir de la classe Alien
+
+    aliens = []
+
+    
+
+    pygame.init()
+
+    width = 640
+
+    height = 480
+
+    BLACK = (0,0,0)
+
+    
+
+    screen = pygame.display.set\_mode((width, height))
+
+    # un objet Clock: horloge pour compter les FPS
+
+    clock = pygame.time.Clock()
+
+    
+
+    done = False # True=1, False=0
+
+    
+
+    monAlien1 = Alien(screen, 30, 30)
+
+    monAlien2 = Alien(screen, 100, 100)
+
+    
+
+    # boucle principale
+
+    while not done:
+
+        # boucle pour traiter tous les événements
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+
+                done = True
+
+        # gestion de mon animation
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+        # couleur (R:0-255 => 2^8, G:0-255, B:0-255)
+
+        screen.fill(BLACK)
+
+        # dessiner
+
+        monAlien1.draw() # Alien.draw(monAlien1)
+
+        monAlien2.draw()
+
+    
+
+    # fin de la boucle
+
+    # sortie
+
+-------------------
+
+
+
+
+
+Références:
+
+   * PyGame: [https://www.pygame.org/news](https://www.pygame.org/news)
+   * SDL: [https://www.libsdl.org/](https://www.libsdl.org/)
+   * FIFO: [https://fr.wikipedia.org/wiki/File\_(structure\_de\_donn%C3%A9es)](https://fr.wikipedia.org/wiki/File\_(structure\_de\_donn%C3%A9es))
+   * Palette de couleur: [https://htmlcolorcodes.com/fr/](https://htmlcolorcodes.com/fr/)
+   * 
+
+
+
+
+
+## Samedi16 janvier (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Programme:
+
+   * Mise en oeuvre de RaspAP (RPi): [https://github.com/billz/raspap-webgui](https://github.com/billz/raspap-webgui)
+   * Initiation Python (suite)
+
+
+### RaspAP
+
+Installation:
+
+$ curl -sL [https://install.raspap.com](https://install.raspap.com) | bash
+
+
+
+Utilisation de RaspAP:
+
+Page Web d'Admin: localhost (defaut: **admin**/**secret**)
+
+
+
+**Initiation Python (suite)**
+
+Installation d'un IDE Python Thonny ou Code (ou d'un éditeur de texte) 
+
+Installation de Code:
+
+Téléchargement sur [https://code.visualstudio.com/docs/?dv=linuxarmhf\_deb](https://code.visualstudio.com/docs/?dv=linuxarmhf\_deb)
+
+Installation:
+
+$ sudo apt install ./code\_1.52.1-1608136275\_armhf.deb 
+
+
+
+Démarrage de l'environnement virtuel Python:
+
+$ mkdir -p travail/jeu
+
+$ cd travail/jeu
+
+$ python3 -m venv .venv
+
+$ ../travail/jeu $ source .venv/bin/activate
+
+
+
+Pour désactiver l'environnement virtuel:
+
+(.venv) ~/travail/jeu $ deactivate 
+
+
+
+Recherche des paquets Python sur Pypi: [https://pypi.org/](https://pypi.org/)
+
+Installation du paquet pygame:
+
+(.venv)  ../travail/jeu $ pi install pygame
+
+(.venv)  ../travail/jeu $ python
+
+>>> import pygame
+
+
+
+Dansle fichier **jeu.py** :
+
+
+
+    import pygame
+
+    
+
+    if \_\_name\_\_ == '\_\_main\_\_':
+
+        print("coucou")
+
+
+
+
+
+
+
+## Samedi 9 janvier (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Mise en oeuvre de Pi-hole: [https://github.cpython3m/pi-hole/pi-hole](https://github.cpython3m/pi-hole/pi-hole)
+
+
+
+### Pi-hole
+
+Installation:
+
+$ wget -O basic-install.sh [https://install.pi-hole.net](https://install.pi-hole.net)
+
+$ sudo bash basic-install.sh
+
+
+
+
+
+Python
+
+Python => 2
+
+$ python
+
+
+
+Python => 3
+
+$ python3
+
+
+
+Module création d'un environnement virtuel:
+
+$ sudo apt install python3-venv
+
+
+
+Création de répertoire de travail
+
+$ mkdir -p travail/py\_opencv
+
+$ cd travail/py\_opencv
+
+
+
+Créer l'environnement virtuel:
+
+$ python3 -m venv .venv
+
+
+
+Activer l'environnement virtuel:
+
+$ source .venv/bin/activate
+
+
+
+Rerchercher une bibliothèque sous PIP:
+
+$ pip search opencv
+
+
+
+IDE:
+
+   * Thonny IDE (livré avec la RaspberryPi OS)
+   * Visual Studio Code
+       * Télécharger le paquet Debian ARM 
+sudo dpkg -i code\_1.52.1-1608136275\_armhf.deb
+
+
+
+
+
+Pour **désactiver** l'environnement virtuel:
+
+$ deactivate
+
+
+
+
+
+Références:
+
+   * [https://realpython.com/python-virtual-environments-a-primer/](https://realpython.com/python-virtual-environments-a-primer/)
+   * [https://docs.python.org/3/tutorial/venv.html]([]https://docs.python.org/3/tutorial/venv.html[])
+   * [https://code.visualstudio.com/](https://code.visualstudio.com/)
+   * [https://github.com/VSCodium/vscodium](https://github.com/VSCodium/vscodium)
+   * [https://fr.wikipedia.org/wiki/Raspberry\_Pi#Mod%C3%A8le\_3\_B\_(Raspberry\_Pi\_3)](https://fr.wikipedia.org/wiki/Raspberry\_Pi#Mod%C3%A8le\_3\_B\_(Raspberry\_Pi\_3))
+
+
+
+
+
+
+## Samedi 19 décembre (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Suite atelier autour de la mise en oeuvre d'un miroir magique: mise en place des application: logiciels
+
+Exemple: [https://www.framboise314.fr/magic-mirror/](https://www.framboise314.fr/magic-mirror/)
+
+   * Démarrage automatique de l'application
+       * Systemd
+   * Cron: exécuter des scripts à une date et une heure spécifiée à l’avance. 
+   * Awk: traitement et manipulation de fichiers textuels ligne par ligne pour des opérations de recherches, de remplacement et de transformations complexes.
+
+
+Références:
+
+   * Cron: [https://fr.wikipedia.org/wiki/Cron](https://fr.wikipedia.org/wiki/Cron)
+   * Awk: [https://fr.wikipedia.org/wiki/Awk](https://fr.wikipedia.org/wiki/Awk)
+   * Liste des commandes: [https://fr.wikipedia.org/wiki/Commandes\_Unix](https://fr.wikipedia.org/wiki/Commandes\_Unix)
+   * [https://developer.ibm.com/tutorials/l-lpic1-map/](https://developer.ibm.com/tutorials/l-lpic1-map/)
+   * [https://www.lpi.org/our-certifications/exam-101-objectives](https://www.lpi.org/our-certifications/exam-101-objectives)
+   * [http://www.mindsensors.com/stem-with-robotics/141-pistorms-v2-express-kit-raspberry-pi-brain-for-lego-robot](http://www.mindsensors.com/stem-with-robotics/141-pistorms-v2-express-kit-raspberry-pi-brain-for-lego-robot)
+
+
+Crontab:
+
+éditer:
+
+pi$ crontab -e
+
+
+
+# m h  dom mon dow   command
+
+0 * * * * df >> /home/pi/df.log
+
+
+
+
+
+AWK
+
+awk -F: '{print $0}' /etc/passwd
+
+awk -F: '{print $1}' /etc/passwd
+
+awk -F: '{print $1 ":" $7}' /etc/passwd
+
+awk -F: '/bash/ {print $1}' /etc/passwd
+
+
+
+
+
+Liens:
+
+   * [https://github.com/billz/raspap-webgui](https://github.com/billz/raspap-webgui)  ## Point d'accès Wifi
+   * [https://pi-hole.net/](https://pi-hole.net/)  ## 
+   * [https://en.wikipedia.org/wiki/Raspberry\_Pi#Model\_B](https://en.wikipedia.org/wiki/Raspberry\_Pi#Model\_B)  ## ARMv8
+
+
+
+
+
+
+## Samedi 12 décembre (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Suite atelier autour de la mise en oeuvre d'un miroir magique: mise en place des application: logiciels
+
+Exemple: [https://www.framboise314.fr/magic-mirror/](https://www.framboise314.fr/magic-mirror/)
+
+   * Démarrage automatique de l'application
+       * Systemd
+   * Sauvegarde et restauration d'une carte SD
+   * mot de passe perdu
+
+
+
+
+Sauvegarde et restauration de la carte SD
+
+
+
+* Windows avec **Win32 Disk Imager** disponible sur: [https://sourceforge.net/projects/win32diskimager/](https://sourceforge.net/projects/win32diskimager/)
+
+
+
+commande **read** => toute la carte SD (toutes les partitions) vers image (img)
+
+commande **write** => image (img) vers toute la carte SD (**écrase le contenu**)
+
+
+
+
+
+* RaspberryPi OS avec l'utilitaire: SD Card Copier avec un lecteur de carte SD externe (supplémentaire sur port USB)
+
+=> Menu Accessoires / SD Card Copier
+
+
+
+ou installation
+
+
+
+$ sudo apt update
+
+$ sudo apt install piclone
+
+
+
+=> copier la carte SD vers une autre carte SD
+
+
+
+* Sur Linux avec la commande **dd**
+
+
+
+# trouver le **device** sur lequel se trouve la carte SD
+
+$ df -h
+
+/dev/**mmcblk0**p1 57288 14752 42536 26% /boot
+
+ou
+
+/dev/sda5 57288 9920 47368 18% /media/boot
+
+
+
+# copier la carte SD dans une image
+
+$ sudo dd if=/dev/sdb of=/home/<user>/backup/SDCardBackup.img
+
+
+
+# restaurer l'image sur la carte SD
+
+
+
+## démonter les partitions si elles sont déjà montées
+
+Par exemple:
+
+$ sudo umount /dev/sdb1
+
+$ sudo umount /dev/sdb2
+
+
+
+## copier l'image sur la carte SD
+
+$ sudo dd bs=4M if=/home/<user>/backup/SDCardBackup.img of=/dev/sdb
+
+
+
+**Mot de passe Raspberry Pi perdu**
+
+
+
+# éteindre la Raspberry Pi
+
+
+
+# extraire la carte SD
+
+
+
+# avec un autre PC, changer la commande de démarrage (fichier cmdline.txt dans répertoire boot) en ajoutant à la fin:
+
+
+
+init=/bin/sh
+
+
+
+# redémarrer la RPi avec la carte SD
+
+
+
+# démarrage en mode root
+
+
+
+# remonter le système de fichier en lecture/écriture
+
+
+
+**mount -o remount,rw /**
+
+
+
+# changer le mot de passe
+
+
+
+password pi
+
+sync
+
+
+
+# éteindre la RPi de nouveau
+
+exec /sbin/init  # 0-6
+
+
+
+# ne pas oublier le nouveau mot de passe
+
+
+
+# extraire la carte SD pour enlever init=/bin/sh du fichier cmdline.txt dans répertoire boot.
+
+
+
+# redémarrer la RPi avec la carte SD
+
+
+
+# Systemd
+
+
+
+Systemd contrôle l'initialisation du système et des services sur la plupart des distribution GNU/Linux.
+
+
+
+Pour démarrer le Magic Mirror avec Systemd, il va falloir placer Magic Mirror dans un répertoire utilisateur dédié "**magic**"
+
+
+
+## création d'un répertoire d'utilisateur "magic"
+
+
+
+$ sudo adduser magic
+
+=> mot de passe vide
+
+
+
+## copier le projet dans /home/magic à la racine
+
+
+
+$ sudo cp -r /home/pi/MagicMirror /home/magic
+
+
+
+**Script pour démarrer le Magic Mirror en mode "server only":**
+
+Fichier /etc/systemd/system/magicmirror.service
+
+$ sudo vi /etc/systemd/system/magicmirror.service
+
+
+
+$ sudo nano /etc/systemd/system/magicmirror.service
+
+****************************
+
+[Unit]
+
+Description=Magic Mirror
+
+After=network.target
+
+StartLimitIntervalSec=0
+
+
+
+[Service]
+
+Type=simple
+
+Restart=always
+
+RestartSec=1
+
+User=magic
+
+WorkingDirectory=/home/magic/MagicMirror/
+
+ExecStart=/usr/bin/node serveronly
+
+
+
+[Install]
+
+WantedBy=multi-user.target
+
+****************************
+
+
+
+# démarrage le service de Magic Mirror 
+
+$ **sudo systemctl start magicmirror.service**
+
+ 
+
+# arrêter le service Magic Mirror
+
+$ sudo systemctl stop magicmirror.service
+
+
+
+# vérifier l'état du sevice Magic Mirror
+
+$ **sudo systemctl status magicmirror.service**
+
+
+
+
+
+# activer le démarrage automatique de Magic Mirror lors du démarrage de la RaspberryPi
+
+$ sudo systemctl enable magicmirror.service
+
+
+
+# désactiver le démarrage automatique de Magic Mirror lors du boot de la RaspberryPi
+
+$ sudo systemctl disable magicmirror.service
+
+
+
+
+
+## Samedi 5 décembre (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Suite atelier autour de la mise en oeuvre d'un miroir magique: mise en place des application: logiciels
+
+Exemple: [https://www.framboise314.fr/magic-mirror/](https://www.framboise314.fr/magic-mirror/)
+
+   * Démarrage automatique de l'application
+
+
+Etudes de deux systèmes:
+
+   * PM2
+   * Systemd
+   * autre: [https://www.npmjs.com/package/forever](https://www.npmjs.com/package/forever)
+
+
+[https://semver.npmjs.com/](https://semver.npmjs.com/)
+
+
+
+### PM2
+
+Installation de PM2
+
+$ sudo npm install -g pm2
+
+
+
+Faire en sorte que PM2 soit lancé au démarrage de la RPi:
+
+$ pm2 startup
+
+
+
+Créer un script pour lancer l'application (mm.sh) dans le répertoire home
+
+$ cd ~
+
+$ vi mm.sh
+
+cd ./MagicMirror
+
+DISPLAY=:0 npm start
+
+
+
+Rendre le fichier exécutable:
+
+$ chmod +x mm.sh
+
+
+
+Démarrer le miroir magique avec la commande:
+
+$ pm2 start mm.sh
+
+
+
+Rendre la configuration persistente au reboot:
+
+$ pm2 save
+
+
+
+
+
+# Autres commande pour gérer l'application
+
+
+
+Redémarer l'application:
+
+$ pm2 restart mm
+
+
+
+**Stopper l'application**:
+
+$ pm2 stop mm
+
+
+
+Voir les messages (logs) de l'application:
+
+$ pm2 logs mm
+
+
+
+Affichier les informations sur le process de l'application:
+
+$ pm2 show mm
+
+
+
+**Enlever Miroir Magique au démarrage:**
+
+$ pm2 delete mm
+
+$ pm2 save --force
+
+
+
+Désactiver pm2 au démarrage:
+
+$ pm2 unstartup
+
+
+
+Valider/activer le SSH sur la Raspberry Pi:
+
+Menu Fichier / Préférences / Configuration du Raspberry Pi / Interfaces / Activer SSH et redémarrer la Raspberry Pi
+
+
+
+Putty (application graphique): pour Windows ou Linux:
+
+    [https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
+
+
+
+Pour trouver l'addresse IP de la machine (sur laquelle on va se connecter):
+
+$ ifconfig
+
+wlp3s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+
+        inet 1**92.168.1.105**  netmask 255.255.255.0  broadcast 192.168.1.255
+
+
+
+ $ sudo apt install putty
+
+
+
+Démarrage l'application:
+
+$ putty 
+
+=> addresse IP de la machine distante
+
+ensuite **Accept**
+
+login: **pi**
+
+password**: raspberry**
+
+
+
+
+
+## Samedi 28 novembre (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Suite atelier autour de la mise en oeuvre d'un miroir magique: mise en place des application: logiciels
+
+Exemple: [https://www.framboise314.fr/magic-mirror/](https://www.framboise314.fr/magic-mirror/)
+
+   * création d'un module externe: en utilisant YesNo API:  [https://yesno.wtf/api](https://yesno.wtf/api)
+   * Démarrage automatique de l'application
+
+
+### Création d'un module
+
+
+
+Création d'un module pour MagicMirror
+
+Utilisation de l'API YesNo: [https://yesno.wtf](https://yesno.wtf)
+
+
+
+# Installation de nodejs et de npm
+
+$ sudo apt update
+
+$ sudo apt install nodejs npm
+
+
+
+Installation de curl et de JQ:
+
+$ sudo apt install curl   jq
+
+
+
+# Vérification
+
+$ node -v
+
+v10.19.0
+
+
+
+$ npm -v
+
+6.14.4
+
+
+
+# Création d'un répertoire de travail
+
+$ mkdir -p travail/sources
+
+$ cd travail/sources
+
+
+
+# Récupérer les sources de MagicMirror
+
+$ git clone [https://github.com/MichMich/MagicMirror.git](https://github.com/MichMich/MagicMirror.git)
+
+$ cd MagicMirror
+
+
+
+# Installation des dépendances de MagicMirror
+
+$ npm install
+
+...
+
+
+
+# Copier le template de configuration pour le modifier et pourvoir démarre MagicMirror
+
+$ cp config/config.js.sample config/config.js
+
+
+
+# Bonne pratique: Vérifier la syntaxe du fichier de configuration avant de démarrer l'application
+
+$ npm run config:check
+
+
+
+# Démarrer MagicMirror avec la configuration par défaut (en mode client Electron)
+
+$ npm run start
+
+
+
+Pour quitter: 
+
+* cliquer sur la touche Alt, puis en haut, menu File / Quit
+
+ou
+
+* appuyer sur les touches Crtl + Q
+
+
+
+
+
+# Créer son module
+
+
+
+Références:
+
+* [https://docs.magicmirror.builders/development/introduction.html](https://docs.magicmirror.builders/development/introduction.html)
+
+* [https://github.com/MichMich/MagicMirror/wiki/3rd-Party-Modules](https://github.com/MichMich/MagicMirror/wiki/3rd-Party-Modules)
+
+* Exemple à partir de : [https://github.com/Kreshnik/MMM-JokeAPI](https://github.com/Kreshnik/MMM-JokeAPI)
+
+
+
+# Y
+
+Appel de l'API en mode programmation: [https://yesno.wtf/api](https://yesno.wtf/api)
+
+Réponse au format JSON:
+
+{
+
+  "answer": "yes",
+
+  "forced": false,
+
+  "image": "[https://yesno.wtf/assets/yes/11-a23cbde4ae018bbda812d2d8b2b8fc6c.gif](https://yesno.wtf/assets/yes/11-a23cbde4ae018bbda812d2d8b2b8fc6c.gif)"
+
+}
+
+
+
+Test:
+
+$ curl [https://yesno.wtf/api](https://yesno.wtf/api) | jq 
+
+
+
+jq formate correctement le json
+
+
+
+# Nom du module
+
+=> MMM-YesNoAPI
+
+
+
+# Créer un répertoire avec le nom du module dans le répertoire module de MagicMirror
+
+
+
+MagicMirror$ cd modules
+
+MagicMirror/modules$ **mkdir MMM-YesNoAPI**
+
+MagicMirror/modules$ **cd MMM-YesNoAPI**
+
+MagicMirror/modules/MMM-YesNoAPI$ 
+
+
+
+# Créer un fichier Javascript, point d'entrée du module qui a le même nom que le module
+
+$** touch MMM-YesNoAPI.js**
+
+
+
+# éditer le fichier pour ajouter les éléments suivants:
+
+
+
+## enregistrement du module et définition des options par défaut:
+
+
+
+    // Exemple de retour JSON de l'appel à l'API: [http://yesnot.wtf/api](http://yesnot.wtf/api)
+
+    // {
+
+    //  "answer": "yes",
+
+    //  "forced": false,
+
+    //  "image": "[https://yesno.wtf/assets/yes/13-c3082a998e7758be8e582276f35d1336.gif](https://yesno.wtf/assets/yes/13-c3082a998e7758be8e582276f35d1336.gif)"
+
+    // }
+
+    
+
+    Module.register("MMM-YesNoAPI", {
+
+        defaults: {
+
+            // intervalle par défaut de rafraîchissement
+
+            fetchInterval: 30 * 1000
+
+        },
+
+        getStyles() {
+
+            return [
+
+                this.file('style.css')
+
+            ]
+
+        },
+
+        yesnoResponse: null,
+
+        notificationReceived(notification, payload, sender) {
+
+            if (notification === 'MODULE\_DOM\_CREATED') {
+
+                this.getYesNoAnswer();
+
+                setInterval(() => {
+
+                    this.getYesNoAnswer()
+
+                }, this.config.fetchInterval);
+
+            }
+
+        },
+
+        getDom() {
+
+            const wrapper = document.createElement("div");
+
+    
+
+            if(this.yesnoResponse === null) return wrapper;
+
+    
+
+            this.setupHTMLStructure(wrapper);
+
+    
+
+            return wrapper;
+
+        },
+
+        setupHTMLStructure(wrapper) {
+
+            if (this.yesnoResponse.answer === 'yes') {
+
+    
+
+                const yesRender = document.createElement("img");
+
+                yesRender.className = "yes no-wrap";
+
+                yesRender.src = this.yesnoResponse.image;
+
+                wrapper.appendChild(yesRender);
+
+    
+
+            } else if (this.yesnoResponse.answer === 'no') {
+
+    
+
+                const noRender = document.createElement("img");
+
+                noRender.className = "no bright medium light no-wrap";
+
+                noRender.src = this.yesnoResponse.image;
+
+                wrapper.appendChild(noRender);
+
+    
+
+            }
+
+            // il existe une troisième réponse 'maybe' que je vous laisse coder
+
+        },
+
+        getYesNoAnswer() {
+
+                // requête HTTP sur l'URL de l'API
+
+            fetch('[https://yesno.wtf/api](https://yesno.wtf/api)').then((response) => {
+
+                // récupération de la réponse et transformation en JSON
+
+                response.json().then((yesnoJSONresponse) => {
+
+                         // la structure JSON est stockée dans notre variable locale au module
+
+                    this.yesnoResponse = yesnoJSONresponse;
+
+                    // demande de rafraîchissement de la page (du div)
+
+                    this.updateDom();
+
+                });
+
+            });
+
+        }
+
+    });
+
+
+
+## Appliquer un style CSS à notre image dans le div
+
+
+
+# création d'un fichier style.css
+
+
+
+.yes {
+
+    animation-name: fadeIn;
+
+    animation-duration: 1s;
+
+    animation-fill-mode: both;
+
+}
+
+.no {
+
+    animation-name: fadeIn;
+
+    animation-duration: 7s;
+
+    animation-fill-mode: both;
+
+}
+
+@keyframes fadeIn {
+
+    0% {opacity: 0;}
+
+    100% {opacity: 1;}
+
+}
+
+DOM = Document Object Model
+
+
+
+ {
+
+                        module: "MMM-YesNoAPI",
+
+                        position: "top\_right",
+
+                        config: {
+
+                                fetchInterval: 20 * 1000 
+
+                        }
+
+                }, },
+
+              
+
+
+
+
+
+# Revenir dans le répertoire de MagicMirror pour déclarer et configurer le module dans la configuration (fichier config/config.js)
+
+
+
+ajouter le module MMM-YesNoAPI:
+
+... // module précédent
+
+                
+
+// fin du tableau des modules
+
+        ]
+
+
+
+# vérifier la syntaxe
+
+$ npm run config:check
+
+...
+
+[2020-11-27 16:37:28.325] [INFO]   Your configuration file doesn't contain syntax errors :)
+
+
+
+# tester MagicMirror avec ce module
+
+$ npm run start
+
+...
+
+[2020-11-27 16:37:48.332] [LOG]    Initializing new module helper ...
+
+[2020-11-27 16:37:48.333] [LOG]    Module helper loaded: newsfeed
+
+[2020-11-27 16:37:48.333] [LOG]    No helper found for module: MMM-YesNoAPI.
+
+[2020-11-27 16:37:48.333] [LOG]    All module helpers loaded.
+
+[2020-11-27 16:37:48.369] [LOG]    Starting server on port 8080 ... 
+
+[2020-11-27 16:37:48.373] [LOG]    Server started ...
+
+...
+
+[2020-11-27 16:37:49.009] [INFO]   Checking git for module: MMM-YesNoAPI
+
+...
+
+
+
+
+
+sudo apt install linssid
+
+
+
+
+
+## Samedi 21 novembre (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Suite atelier autour de la mise en oeuvre d'un miroir magique: mise en place des application: logiciels
+
+Exemple: [https://www.framboise314.fr/magic-mirror/](https://www.framboise314.fr/magic-mirror/)
+
+   * Ajout d'une module externe (Third Party)
+   * Démarrage automatique de l'application
+
+
+Choix d'un module externe (qui marche) !
+
+[https://github.com/MichMich/MagicMirror/wiki/3rd-Party-Modules](https://github.com/MichMich/MagicMirror/wiki/3rd-Party-Modules)
+
+
+
+Autre 3rd party modules avec gestion de la bourse
+
+<MM2>$ cd modules
+
+$  git clone [https://github.com/hakanmhmd/MMM-Stock.git](https://github.com/hakanmhmd/MMM-Stock.git)
+
+
+
+odifier la configuration:
+
+$ **cd ..**
+
+Editer la configuration (**geany**)
+
+$ vi config/config.js
+
+...
+
+modules: [
+
+...
+
+        },
+
+        {
+
+                    module: "MMM-Stock",
+
+                    position: "top\_left",
+
+                    config: {
+
+                            companies: ["MSFT", "GOOG", "ORCL", "FB", "AAPL"]
+
+                    }
+
+        },
+
+]
+
+
+
+$ npm run config:check
+
+
+
+$ npm run start
+
+
+
+
+
+Autre module avec installation des dépendances
+
+<MM2>$ cd modules
+
+$ git clone [https://github.com/normyx/MMM-Nantes-TAN.git](https://github.com/normyx/MMM-Nantes-TAN.git)
+
+$ cd MMM-Nantes-TAN
+
+$ npm install
+
+
+
+# modifier la configuration:
+
+$** cd ../..**
+
+$ vi config/config.js
+
+...
+
+modules: [
+
+...
+
+        },
+
+        {
+
+            module: 'MMM-Nantes-TAN',
+
+            position: 'top\_right',
+
+            header: 'Metro/Bus Nantes',
+
+            classes: "default everyone",
+
+            config: {
+
+                debug: false,
+
+                showSecondsToNextUpdate:false,
+
+                busStations: [
+
+                    {arret: 'COMM', ligne:'C3', sens:'1', color:'blue'},
+
+                    {arret: 'COMM', ligne:'1', sens:'1', color:'yellow', symbol:'subway'},
+
+                    {arret: 'CDCO', ligne:'4', sens:'1', color:'purple', symbol:'bus'},
+
+                    {arret: 'GMAR', ligne:'NL', sens:'1', color:'green', symbol:'ship'},
+
+                    {arret: 'COMM', ligne:'1', sens:'1', color:'orange'},
+
+                ],
+
+            }
+
+        },
+
+]
+
+
+
+Vérification du fichier de config.js:
+
+$ npm run config:check
+
+
+
+Démarrer le miroir:
+
+$ npm run start
+
+
+
+Il nous restera l'installation au démarrage de la RPi
+
+   * PM2
+   * Systemd
+
+
+Programmation d'un module avec l'API: [https://yesno.wtf/api](https://yesno.wtf/api)
+
+
+
+[https://github.com/MichMich/MagicMirror/wiki/3rd-Party-Modules](https://github.com/MichMich/MagicMirror/wiki/3rd-Party-Modules)
+
+
+
+[https://github.com/Kreshnik/MMM-JokeAPI](https://github.com/Kreshnik/MMM-JokeAPI)
+
+
+
+//Flux rss Ouest France  (Jo)
+
+title: "Ouest France",
+
+url: "[https://www.ouest-france.fr/rss.xml?insee=FRA](https://www.ouest-france.fr/rss.xml?insee=FRA)"
+
+
+
+A mettre dans le fichier config
+
+
+
+
+
+## Samedi 14 novembre (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Atelier autour de la mise en oeuvre d'un miroir magique: mise en place des application: logiciels
+
+Exemple: [https://www.framboise314.fr/magic-mirror/](https://www.framboise314.fr/magic-mirror/)
+
+
+
+$ mkdir travail
+
+$ cd travail
+
+
+
+Site du MagicMirror: [https://github.com/MichMich/MagicMirror](https://github.com/MichMich/MagicMirror)
+
+
+
+Récupérer les sources de MagicMirror (MM2)
+
+$ git clone [https://github.com/MichMich/MagicMirror.git](https://github.com/MichMich/MagicMirror.git)
+
+
+
+Vérifier les outils (nodejs et npm):
+
+$ node -v                        # version > 10
+
+$ npm -v                         # version > 6
+
+
+
+Installation de NodeJS et de NPM
+
+$ sudo apt install nodejs npm
+
+
+
+npm, trop vieux:
+
+$ sudo npm i npm@latest -g 
+
+
+
+Pour aller dans le répertoire de MagicMirror:
+
+$ cd travail/MagicMirror
+
+
+
+dans le répertoire MagicMirror :
+
+$ more package.json
+
+
+
+à partir des informations de package.json, le npm va installer les dépendences:
+
+$ npm install
+
+
+
+# préparer la configuration
+
+$ cp config/config.js.sample config/config.js
+
+
+
+# démarrage de l'application en mode "normal":
+
+
+
+
+
+$ npm run start
+
+
+
+# modifier la config
+
+[https://docs.magicmirror.builders/modules/introduction.html](https://docs.magicmirror.builders/modules/introduction.html)
+
+
+
+## ajouter un "hello world" module
+
+
+
+$ vi config/config.js
+
+...
+
+modules: [
+
+...
+
+        },
+
+        {
+
+                module: "helloworld",
+
+                position: "top\_right",
+
+                config: {
+
+                        // See 'Configuration options' for more information.
+
+                        text: "Coucou le monde!"
+
+                }
+
+        },
+
+]
+
+
+
+Pour vérifier la configuration:
+
+$ npm run config:check
+
+    > magicmirror@2.13.0 config:check /home/pi/travail/MagicMirror
+
+    > node js/check\_config.js
+
+    [2020-11-14 11:40:40.012] [INFO]   Checking file...  /home/pi/travail/MagicMirror/config/config.js
+
+    [2020-11-14 11:40:40.322] [INFO]   Your configuration file doesn't contain syntax errors :)
+
+
+
+
+
+# démarrage de l'application avec la nouvelle configuration:
+
+$ npm run start
+
+# appuyer sur la touche [Alt] pour afficher la barre de menu pour quitter Electron
+
+
+
+Autres modules disponibles et fournis par des tiers:
+
+[https://github.com/MichMich/MagicMirror/wiki/3rd-party-modules](https://github.com/MichMich/MagicMirror/wiki/3rd-party-modules)
+
+
+
+
+
+Gestion des écrans à la main:
+
+[https://doc.ubuntu-fr.org/mu](h[]ttps://doc.ubuntu-fr.org/mu[])[] --right oflti-ecran[]
+
+[https://troumad.developpez.com/linux/serveurx/xrandr/]([]https://troumad.developpez.com/linux/serveurx/xrandr/[])
+
+[https://incenp.org/notes/2012/dualscreen-dynamic-configuration.html](https://incenp.org/notes/2012/dualscreen-dynamic-configuration.html)
+
+
+
+$ xrandr
+
+
+
+$ xrandr \
+
+  --output LVDS1 --mode 800x600 \
+
+  --output VGA1  --mode 800x600 --right-of LVDS1
+
+  
+
+  
+
+ 
+
+## Samedi 7 novembre (visio)
+
+
+
+Visio-conférence de 10h à 12h.
+
+
+
+Présentation du matériel et des logiciels (suite)
+
+   * connexion à distance
+       * SSH
+       * VNC (licence RPi)
+       * SSH -X: ssh -X pi@192.168.2.101 (lancer une application graphique sur RPi, affichage à distance)
+
+
+Protocole RDP (Windows)
+
+
+
+Mise  jour distribution RaspberryPi OS (Raspbian):
+
+   * sudo apt update
+   * sudo apt upgrade
+   * sudo apt autoremove
+   * sudo apt autoclean
+
+
+Vérification des process (applications qui tournent)
+
+   *  top
+   * htop
+   * bpytop - sudo apt install bpytop
+
+
+Taille du disque et place disponible sur une partition et/ou disque:
+
+   * df -h .
+   * pydf - sudo  apt-ge install pydf
+
+
+Taille d'un répertoire:
+
+   * du -sh .
+   * duf - [https://github.com/muesli/duf](https://github.com/muesli/duf)
+
+
+Application pour découverte automatique:
+
+    DNS (Domain Name Server)
+
+    RFC => standard
+
+    mDNS (multicast DNS): [https://en.wikipedia.org/wiki/Multicast\_DNS](https://en.wikipedia.org/wiki/Multicast\_DNS)
+
+    [https://www.journaldulapin.com/2015/08/31/acceder-au-raspberry-pi-via-bonjour/](https://www.journaldulapin.com/2015/08/31/acceder-au-raspberry-pi-via-bonjour/)
+
+
+
+Rechercher un paquet:
+
+   * dpkg -l | grep mdns
+   * apt list --installed | grep paquet
+
+
+Programmation Python:
+
+python3
+
+
+
+[https://fr.wikipedia.org/wiki/Erreur\_d%27arrondi](https://fr.wikipedia.org/wiki/Erreur\_d%27arrondi)
+
+[https://fr.wikipedia.org/wiki/D%C3%A9cimal\_cod%C3%A9\_binaire](https://fr.wikipedia.org/wiki/D%C3%A9cimal\_cod%C3%A9\_binaire)
+
+[https://fr.wikipedia.org/wiki/IEEE\_754](https://fr.wikipedia.org/wiki/IEEE\_754)
+
+[https://fr.wikipedia.org/wiki/Virgule\_flottante](https://fr.wikipedia.org/wiki/Virgule\_flottante)
+
+
+
+sudo apt install algobox
+
+[https://trinket.io/]([]https://trinket.io/[])
+
+[https://books.trinket.io/pfe/](https://books.trinket.io/pfe/) ## tuto python
+
+[https://www.py4e.com/book.php](https://www.py4e.com/book.php)  ## PDF (anglais)
+
+
+
+[https://pi-hole.net/](https://pi-hole.net/)
+
+
+
+Simuler le miroir magique: mise en place des application: logiciels
+
+Exemple: [https://www.framboise314.fr/magic-mirror/](https://www.framboise314.fr/magic-mirror/)
+
+
+
+Serveur auto hébergé:
+
+[https://yunohost.org/#/](https://yunohost.org/#/)
+
+
+
+Références:
+
+   * Présentation outils scientifiques: [https://cloud.lph.bzh/index.php/s/7FKbIcuIO3kYAKP](https://cloud.lph.bzh/index.php/s/7FKbIcuIO3kYAKP)
+   * 
+
+
+
+## Samedi 24 octobre
+
+
+
+Présentation du matériel et des logiciels (suite)
+
+Préparation de la carte SD pour le démarrage de la Raspberry Pi
+
+   * Télécharger une distribution sur [https://www.raspberrypi.org/downloads/](https://www.raspberrypi.org/downloads/)
+   * Prendre par exemple: **l'image Raspberry Pi OS: **[https://www.raspberrypi.org/downloads/raspberry-pi-os/](https://www.raspberrypi.org/downloads/raspberry-pi-os/)
+   * Installer un utilitaire pour préparer la carte SD avec l'image téléchargée ci-dessus
+       * Utilitaires: (**voir les références plus bas**)
+           * Etcher: [https://www.balena.io/etcher/](https://www.balena.io/etcher/) (AppImage pour Linux 32 ou 64)
+               * unzip balena-etcher-electron-1.5.109-linux-x64.zip
+               * chmod +x balenaEtcher-1.5.109-x64.AppImage
+               * Pour démarrer l'application:
+                   * ./balenaEtcher-1.5.109-x64.AppImage
+           * **Raspberry Pi Imager: **[https://www.raspberrypi.org/downloads/](https://www.raspberrypi.org/downloads/)  (ne marche pas chez moi sous Ubuntu 20.04)
+               * Télécharger le paquet  **imager\_1.4\_amd64.deb** pour Ubuntu 20.04:
+               * updsudo dpkg -i imager\_1.4\_amd64.deb
+   * Démarrer l'utilitaire
+       * Insérer la carte SD (tout ce qu'elle contient sera effacée (!) )
+       * Sélectionner l'image qui a été téléchargée
+       * Choisir le périphérique de destination (Carte SD)
+       * Lancer la préparation
+   * Une fois que l'opération est terminée, la carte SD est prête et contient deux partitions:
+       * une partition de **boot** avec la config (config.txt), le noyau Linux, et les descriptions des composants matériels des cartes Raspberry Pi (fichiers suffixes DTB)
+       * une partition **rootfs** avec le système de fichier ext4 qui contient la distribution **Raspberry Pi OS**, par exemple, si on a choisi cette image (cette partition contient le système d'exploitation (l'environnement et les applications) pour la Raspberry Pi)
+   * Sauvegarde, il est intéressant de sauvegarder certains éléments des deux partitions, qui en cas de problème avec la carte, seront toujours en sécurité ailleurs:
+       * la config (fichier **config.txt, commandline.txt** et tout ce qui a été ajouté d'utile sur cette partition: par exemple: fichier ssh (pour se rappeler de faire la config SSH)) de la partition **boot**
+       * et sur la partition **rootfs**, tout ce qui a été utile au développement et à la configuration d'applications, par exemple: les fichiers dans le répertoire **/home/pi**, et quelques fichiers de config du répertoire **/etc**, et parfois des données du répertoire **/var.**
+
+
+Démarrage de la Raspberry Pi:
+
+   * Insérer la carte SD dans la Raspberry Pi
+   * brancher, écran, clavier, mulot, alimentation
+       * Framboises
+       * Messages du noyau
+       * Splash Screen
+           * et au premier démarrage (pas de messages (!))
+           * agrandissement de la partition **rootfs** pour prendre le reste de la place de la carte SD
+           * et redimmensionnement du système de fichier ext4 sous jacent pour occuper le nouvel espace de la partition **rootfs.**
+       * Démarrage de la console ou de l'environnement graphique suivant la distribution et l'image choisie.
+
+
+Configuration au premier démarrage:
+
+   * Donner un mot de passe
+   * Choisir la localisation (France, Time Zone, type de clavier)
+   * Choisir le réseau Wifi, si pas de connection filaire
+   * Mise à jour du système 
+       * mise à jour faite automatiquement sur le principe de: 
+           * sudo apt update
+           * sudo apt upgrade
+       * et en option pour nettoyer si besoin:
+           * sudo apt autoremove
+           * 
+
+   * C'est prêt
+       * la Rapsberry Pi n'est pas à l'heure: elle ne contient pas par défaut de dispositif de gestion d'horloge avec alimentation secourue, elle se mettra à l'heure toute seule si elle est connectée à Internet en utilisant une application cliente NTP qui ira chercher l'heure sur un serveur: [https://fr.wikipedia.org/wiki/Network\_Time\_Protocol](https://fr.wikipedia.org/wiki/Network\_Time\_Protocol)
+   * Pour changer cette configuration, il faut utiliser l'application **Configuration Raspberry Pi** (ou raspi-config en  console/ligne de commande)
+       * Dans le menu de l'environnement graphique: selectionner 
+       * ou en ligne de commande:
+           * sudo **raspi-config**
+
+
+Eteindre la Raspberry Pi:
+
+   * Menu principal, choisir **déconnexion** et ensuite bouton **shutdown**
+   * ou en utilisant un terminal shell
+       * sudo shutdown -h now
+           * -h: halt
+           * now: maintenant
+
+
+Connexion à distance en mode console (en utilisant SSH: secure shell):
+
+   * Activation du serveur SSH côté Raspberry Pi
+       * par le menu **Configuration Raspberry Pi** 
+       * ou par l'application en ligne de commande **raspi-config** 
+       * ou par configuration au démarrage (configuration sur la partition **boot**)
+   * **Activation au démarrage**
+       * insérer la carte SD sur votre PC Linux (ou Windows)
+       * ajouter sur la partition **boot**, un fichier **ssh** (vide) pour signaler l'activation du serveur SSH
+       * démonter les partitions boot et rootfs
+       * récupérer la carte SD pour l'insérer dans la Raspberry Pi
+       * démarrer la Rapsberry Pi
+   * Connection **SSH**
+       * sans écran et sans configuration spécifique du réseau (filaire ou sans fil), il n'est pas facile de savoir sur quelle adresse IP se trouve la Raspberry Pi pour pouvoir s'y connecter en SSH.
+       * il est possible de scanner le réseau **local** (j'insiste: **réseau local**) pour essayer de trouver l'adresse IP de la Raspberry Pi
+       * utilisation de l'utilitaire nmap (sous linux et apparemment existe aussi sous Windows) pour scanner le réseau local à la recherche de la Raspberry Pi
+       * recherche du préfixe du réseau local:
+           * sous linux, commande **ip** avec les paramètre **a **(addresse) et **s **(show)
+               * ip a s
+    1: lo:   inet 127.0.0.1/8 scope host lo ## adresse locale
+
+    2: eno1: ## interface réseau filaire non connecté 
+
+    3: wlp3s0: inet 192.168.1.105/24  ## interface réseau Wifi, adresse IP de la machine sur le réseau local
+
+           * sous Windows, commande **ipconfig**
+
+
+       * Mon adresse IP est **192.168.1.105/24**, et mon préfixe réseau local est **192.168.1.0/24**
+       * scanner le réseau local en utilisant **nmap**:
+           * sudo nmap **192.168.1.0/24**
+    Nmap scan report for \_gateway (192.168.1.1)
+
+    Host is up (0.042s latency).
+
+    Not shown: 998 closed ports
+
+    PORT     STATE SERVICE
+
+    443/tcp  open  https
+
+    5431/tcp open  park-agent
+
+    MAC Address: xxxx (Cisco-Linksys)
+
+    
+
+    Nmap scan report for nas (192.168.1.42)
+
+    Host is up (0.0057s latency).
+
+    Not shown: 992 closed ports
+
+    PORT     STATE SERVICE
+
+    22/tcp   open  ssh
+
+    
+
+    Nmap scan report for pc portable (192.168.1.105)
+
+    Host is up (0.0000030s latency).
+
+    Not shown: 998 closed ports
+
+    PORT    STATE SERVICE
+
+    139/tcp open  netbios-ssn
+
+    445/tcp open  microsoft-ds
+
+           * avec le résultat de la requête précédente (fictif), on peut estimer que l'adresse IP de la Rapsberry Pi est **192.168.1.42** car c'est la seule adresse IP a avoir un **port 22** (**port logiciel** d'écoute par défaut du serveur SSH)
+       * Connecion au compte **pi **de la Raspberry Pi à partir d'un PC distant sur le même réseau local en utilisant l'application **ssh**:
+           * ssh pi@**192.168.1.42**
+               * répondre yes à la première question (une seule fois)
+               * donner le mot de passe
+               * résultat: un shell ouvert sur la Raspbery Pi sur le compte pi
+               * ensuite utilisation des commande pour lancer les applications non-graphiques sur la RaspBerry Pi
+                   * exemple pour configurer la Raspberry Pi
+                   * sudo raspi-config
+               * éteindre la Rapsberry Pi à distance:
+                   * sudo shutdown -h now
+                   * fermeture de la session, la Rapsberry Pi s'éteint
+       * Sous Windows connexion à la Raspberry Pi en utilisant le logiciel **Putty**: [https://www.putty.org/](https://www.putty.org/)
+
+
+**Références**:
+
+   * Qu'est ce qu'une partition: [https://fr.wikipedia.org/wiki/Partition\_(informatique)](https://fr.wikipedia.org/wiki/Partition\_(informatique))
+   * Outil de gestion des partitions sous Linux, Gparted: [https://fr.wikipedia.org/wiki/GParted](https://fr.wikipedia.org/wiki/GParted)
+       * installation: sudo apt install gparted
+   * Qu'est ce qu'un système de fichier: [https://fr.wikipedia.org/wiki/Syst%C3%A8me\_de\_fichiers](https://fr.wikipedia.org/wiki/Syst%C3%A8me\_de\_fichiers)
+   * Qu'est ce qu'un terminal: [https://fr.wikipedia.org/wiki/Terminal\_(informatique)](https://fr.wikipedia.org/wiki/Terminal\_(informatique))
+       * Terminal virtuel: [https://fr.wikipedia.org/wiki/%C3%89mulateur\_de\_terminal](https://fr.wikipedia.org/wiki/%C3%89mulateur\_de\_terminal)
+   * Qu'est ce qu'un Shell: [https://fr.wikipedia.org/wiki/Interface\_syst%C3%A8me](https://fr.wikipedia.org/wiki/Interface\_syst%C3%A8me)
+       * Shell Unix: [https://fr.wikipedia.org/wiki/Shell\_Unix](https://fr.wikipedia.org/wiki/Shell\_Unix)
+       * [https://fr.wikipedia.org/wiki/Shell\_Unix#Shells](https://fr.wikipedia.org/wiki/Shell\_Unix#Shells)
+   * Qu'est ce qu'un réseau local: [https://fr.wikipedia.org/wiki/R%C3%A9seau\_local](https://fr.wikipedia.org/wiki/R%C3%A9seau\_local)
+   * Qu'est ce qu'une adresse IP: [https://fr.wikipedia.org/wiki/Adresse\_IP](https://fr.wikipedia.org/wiki/Adresse\_IP)
+   * Qu'est ce qu'un port logiciel: [https://fr.wikipedia.org/wiki/Port\_(logiciel)](https://fr.wikipedia.org/wiki/Port\_(logiciel))
+   * SSH:  [https://fr.wikipedia.org/wiki/Secure\_Shell](https://fr.wikipedia.org/wiki/Secure\_Shell)
+   * Putty: [https://fr.wikipedia.org/wiki/PuTTY](https://fr.wikipedia.org/wiki/PuTTY)
+   * nmap: [https://fr.wikipedia.org/wiki/Nmap](https://fr.wikipedia.org/wiki/Nmap)
+
+
+
+
+## Mardi 13 octobre
+
+
+
+Introduction
+
+Tour de table
+
+Présentation du matériel et des logiciels
+
+
+
+Références:
+
+   * [https://www.raspberrypi.org/](https://www.raspberrypi.org/)
+   * [https://www.framboise314.fr/](https://www.framboise314.fr/)
+   * [https://inforef.be/swi/download/apprendre\_python3.pdf](https://inforef.be/swi/download/apprendre\_python3.pdf)
+Achats:
+
+   * [https://www.kubii.fr/](https://www.kubii.fr/)
+   * [https://www.gotronic.fr/cat-cartes-raspberry-1413.htm](https://www.gotronic.fr/cat-cartes-raspberry-1413.htm)
+   * [https://fr.rs-online.com/web/c/raspberry-pi-arduino-outils-de-developpement/boutique-raspberry-pi/](https://fr.rs-online.com/web/c/raspberry-pi-arduino-outils-de-developpement/boutique-raspberry-pi/)
+
+
+
+
 ## Mardi 14 janvier 2020
 
 Séance de 18h à 20h.
